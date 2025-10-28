@@ -1,0 +1,26 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: message-service
+  
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+        bindings:
+          output:
+            producer:
+              group: message-service-group
+
+# RocketMQ配置
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: message-service-group

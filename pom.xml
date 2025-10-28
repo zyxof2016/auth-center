@@ -30,6 +30,11 @@
         <jjwt.version>0.9.1</jjwt.version>
         <hutool.version>5.8.25</hutool.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        
+        <!-- 第三方登录相关依赖版本 -->
+        <httpclient.version>4.5.14</httpclient.version>
+        <fastjson.version>2.0.43</fastjson.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
     </properties>
 
     <modules>

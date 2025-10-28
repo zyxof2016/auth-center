@@ -1,0 +1,92 @@
+# 认证授权配置
+auth:
+  # JWT配置
+  jwt:
+    secret: "your-jwt-secret-key-here"
+    expiration: 7200 # 过期时间（秒）
+    refresh-expiration: 2592000 # 刷新令牌过期时间（秒）
+  
+  # 验证码配置
+  verification-code:
+    length: 6
+    expire-seconds: 300
+    frequency-limit:
+      per-minute: 1
+      per-hour-by-ip: 10
+      per-day-by-receiver: 20
+    sms:
+      provider: "aliyun"
+      sign-name: "认证中心"
+      template-id: "SMS_123456789"
+      enabled: true
+    email:
+      from: "noreply@auth-center.com"
+      subject: "验证码"
+      template: "您的验证码是：{code}，有效期5分钟"
+      enabled: true
+  
+  # 第三方登录配置 - 插拔式设计
+  third-party:
+    # 是否启用第三方登录功能
+    enabled: true
+    # 默认回调地址
+    default-redirect-uri: "http://localhost:8080/auth/callback"
+    
+    # 第三方登录提供者配置
+    providers:
+      # 微信登录配置
+      wechat:
+        enabled: true
+        name: "微信登录"
+        app-id: "wx1234567890abcdef"
+        app-secret: "your-wechat-app-secret"
+        scope: "snsapi_login"
+        icon-url: "/icons/wechat.png"
+        weight: 10
+        
+      # QQ登录配置
+      qq:
+        enabled: true
+        name: "QQ登录"
+        app-id: "123456789"
+        app-secret: "your-qq-app-secret"
+        scope: "get_user_info"
+        icon-url: "/icons/qq.png"
+        weight: 20
+        
+      # 支付宝登录配置
+      alipay:
+        enabled: true
+        name: "支付宝登录"
+        app-id: "2021000123456789"
+        app-secret: "your-alipay-private-key"
+        scope: "auth_user"
+        icon-url: "/icons/alipay.png"
+        weight: 30
+        
+      # GitHub登录配置
+      github:
+        enabled: true
+        name: "GitHub登录"
+        app-id: "your-github-client-id"
+        app-secret: "your-github-client-secret"
+        scope: "user:email"
+        icon-url: "/icons/github.png"
+        weight: 40
+        
+      # 示例：自定义第三方登录（如企业微信）
+      wecom:
+        enabled: false  # 暂时禁用
+        name: "企业微信登录"
+        app-id: "your-wecom-corp-id"
+        app-secret: "your-wecom-secret"
+        scope: "snsapi_privateinfo"
+        handler-class: "com.auth.center.auth.custom.WeComThirdPartyProvider"
+        icon-url: "/icons/wecom.png"
+        weight: 50
+  
+  # 登录配置
+  login:
+    max-fail-count: 5 # 最大登录失败次数
+    lock-duration: 1800 # 锁定时间（秒）
+    remember-me-duration: 604800 # 记住我过期时间（秒）

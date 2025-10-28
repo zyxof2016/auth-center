@@ -69,15 +69,17 @@ PageResponse.of(pageData, pageNum, pageSize, total);
 
 ## 2. 认证授权接口
 
-### 2.1 用户登录
-**接口**: `POST /api/auth/login`
-**描述**: 用户登录认证
+### 2.1 账号密码登录
+**接口**: `POST /api/auth/login/password`
+**描述**: 用户名/密码登录认证
 **请求参数**:
 ```json
 {
+  "loginType": "USERNAME",
   "username": "admin",
   "password": "123456",
   "captcha": "abcd",
+  "captchaId": "captcha_123456",
   "rememberMe": true
 }
 ```
@@ -99,6 +101,164 @@ PageResponse.of(pageData, pageNum, pageSize, total);
       "avatar": "/avatar/default.png"
     }
   },
+  "timestamp": 1640995200000
+}
+```
+
+### 2.2 手机号/邮箱密码登录
+**接口**: `POST /api/auth/login/password`
+**描述**: 手机号/邮箱+密码登录认证
+**请求参数**:
+```json
+{
+  "loginType": "PHONE",
+  "phone": "13800138000",
+  "password": "123456",
+  "captcha": "abcd",
+  "captchaId": "captcha_123456",
+  "rememberMe": true
+}
+```
+或
+```json
+{
+  "loginType": "EMAIL",
+  "email": "admin@example.com",
+  "password": "123456",
+  "captcha": "abcd",
+  "captchaId": "captcha_123456",
+  "rememberMe": true
+}
+```
+**响应数据**: 同账号密码登录
+
+### 2.3 手机号验证码登录
+**接口**: `POST /api/auth/login/code`
+**描述**: 手机号+验证码登录认证
+**请求参数**:
+```json
+{
+  "phone": "13800138000",
+  "code": "123456",
+  "bizId": "sms_1234567890",
+  "rememberMe": true
+}
+```
+**响应数据**: 同账号密码登录
+
+### 2.4 发送登录验证码
+**接口**: `POST /api/auth/login/send-code`
+**描述**: 发送手机号/邮箱登录验证码
+**请求参数**:
+```json
+{
+  "receiver": "13800138000",
+  "codeType": "LOGIN",
+  "captcha": "abcd",
+  "captchaId": "captcha_123456"
+}
+```
+**响应数据** (SingleResponse格式):
+```json
+{
+  "success": true,
+  "errCode": "200",
+  "errMessage": "验证码发送成功",
+  "data": {
+    "bizId": "sms_1234567890",
+    "expireSeconds": 300
+  },
+  "timestamp": 1640995200000
+}
+```
+
+### 2.5 第三方登录 - 获取授权地址
+**接口**: `GET /api/auth/third/authorize-url`
+**描述**: 获取第三方登录授权地址
+**查询参数**:
+```
+thirdType=WECHAT&redirectUri=http://localhost:8080/callback&state=random_state
+```
+**响应数据** (SingleResponse格式):
+```json
+{
+  "success": true,
+  "errCode": "200",
+  "errMessage": "获取成功",
+  "data": {
+    "authorizeUrl": "https://open.weixin.qq.com/connect/qrconnect?appid=wx123456&redirect_uri=http://localhost:8080/callback&response_type=code&scope=snsapi_login&state=random_state",
+    "thirdType": "WECHAT",
+    "expireTime": "2024-01-15 11:30:00"
+  },
+  "timestamp": 1640995200000
+}
+```
+
+### 2.6 第三方登录 - 回调处理
+**接口**: `POST /api/auth/third/callback`
+**描述**: 第三方登录回调处理
+**请求参数**:
+```json
+{
+  "thirdType": "WECHAT",
+  "code": "authorization_code",
+  "state": "random_state"
+}
+```
+**响应数据**: 同账号密码登录
+
+### 2.7 第三方账号绑定
+**接口**: `POST /api/auth/third/bind`
+**描述**: 绑定第三方账号到当前用户
+**请求参数**:
+```json
+{
+  "thirdType": "WECHAT",
+  "code": "authorization_code",
+  "state": "random_state"
+}
+```
+**响应数据** (Response格式):
+```json
+{
+  "success": true,
+  "errCode": "200",
+  "errMessage": "绑定成功",
+  "data": null,
+  "timestamp": 1640995200000
+}
+```
+
+### 2.8 第三方账号解绑
+**接口**: `DELETE /api/auth/third/unbind`
+**描述**: 解绑第三方账号
+**请求参数**:
+```json
+{
+  "thirdType": "WECHAT"
+}
+```
+**响应数据**: 同绑定接口
+
+### 2.9 获取用户绑定的第三方账号
+**接口**: `GET /api/auth/third/bindings`
+**描述**: 获取用户绑定的第三方账号列表
+**响应数据** (MultiResponse格式):
+```json
+{
+  "success": true,
+  "errCode": "200",
+  "errMessage": "查询成功",
+  "data": [
+    {
+      "thirdType": "WECHAT",
+      "thirdNickname": "微信用户",
+      "thirdAvatar": "https://third-party.com/avatar.jpg",
+      "bindTime": "2024-01-15 10:30:00",
+      "status": 1
+    }
+  ],
+  "total": 1,
   "timestamp": 1640995200000
 }
 ```

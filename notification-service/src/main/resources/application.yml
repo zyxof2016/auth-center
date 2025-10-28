@@ -1,0 +1,40 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: notification-service
+  
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: your-email@qq.com
+    password: your-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# 短信服务配置
+sms:
+  aliyun:
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    sign-name: 认证中心
+  tencent:
+    secret-id: your-secret-id
+    secret-key: your-secret-key
+    app-id: your-app-id
+
+# RocketMQ配置
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: notification-service-group

@@ -1,0 +1,28 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: monitor-service
+  
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  
+  boot:
+    admin:
+      ui:
+        title: 认证中心监控面板
+      discovery:
+        converter:
+          management-url: management-url
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

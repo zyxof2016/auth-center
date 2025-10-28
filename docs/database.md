@@ -47,7 +47,7 @@ CREATE TABLE sys_user (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
     tenant_id BIGINT NOT NULL COMMENT '租户ID',
     username VARCHAR(64) NOT NULL COMMENT '用户名',
-    password VARCHAR(128) NOT NULL COMMENT '密码',
+    password VARCHAR(128) COMMENT '密码（第三方登录用户可能为空）',
     email VARCHAR(128) COMMENT '邮箱',
     phone VARCHAR(20) COMMENT '手机号',
     real_name VARCHAR(64) COMMENT '真实姓名',
@@ -56,6 +56,7 @@ CREATE TABLE sys_user (
     gender TINYINT DEFAULT 0 COMMENT '性别：0-未知，1-男，2-女',
     birthday DATE COMMENT '生日',
     status TINYINT DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
+    user_type TINYINT DEFAULT 1 COMMENT '用户类型：1-普通用户，2-第三方用户',
     last_login_time DATETIME COMMENT '最后登录时间',
     last_login_ip VARCHAR(64) COMMENT '最后登录IP',
     login_fail_count INT DEFAULT 0 COMMENT '登录失败次数',
@@ -66,11 +67,43 @@ CREATE TABLE sys_user (
     updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     UNIQUE KEY uk_tenant_username (tenant_id, username),
     UNIQUE KEY uk_tenant_email (tenant_id, email),
+    UNIQUE KEY uk_tenant_phone (tenant_id, phone),
     INDEX idx_tenant_id (tenant_id),
     INDEX idx_username (username),
+    INDEX idx_email (email),
+    INDEX idx_phone (phone),
     INDEX idx_status (status),
+    INDEX idx_user_type (user_type),
     INDEX idx_created_time (created_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户信息表';
+```
+
+#### sys_user_third_auth (用户第三方认证表)
+```sql
+CREATE TABLE sys_user_third_auth (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+    tenant_id BIGINT NOT NULL COMMENT '租户ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    third_type VARCHAR(20) NOT NULL COMMENT '第三方类型：WECHAT/QQ/ALIPAY/GITHUB',
+    third_id VARCHAR(128) NOT NULL COMMENT '第三方用户唯一标识',
+    third_union_id VARCHAR(128) COMMENT '第三方UnionID（微信专用）',
+    third_nickname VARCHAR(128) COMMENT '第三方昵称',
+    third_avatar VARCHAR(500) COMMENT '第三方头像',
+    access_token VARCHAR(500) COMMENT '访问令牌',
+    refresh_token VARCHAR(500) COMMENT '刷新令牌',
+    expire_time DATETIME COMMENT '令牌过期时间',
+    bind_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '绑定时间',
+    status TINYINT DEFAULT 1 COMMENT '状态：0-解绑，1-绑定',
+    created_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_third_user (tenant_id, third_type, third_id),
+    UNIQUE KEY uk_user_third (tenant_id, user_id, third_type),
+    INDEX idx_tenant_id (tenant_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_third_type (third_type),
+    INDEX idx_third_id (third_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户第三方认证表';
 ```
 
 ### 2.3 角色权限表
@@ -217,7 +250,7 @@ CREATE TABLE sys_login_log (
     tenant_id BIGINT NOT NULL COMMENT '租户ID',
     user_id BIGINT COMMENT '用户ID',
     username VARCHAR(64) COMMENT '用户名',
-    login_type VARCHAR(20) COMMENT '登录类型：password,oauth2,sso',
+    login_type VARCHAR(20) COMMENT '登录类型：PASSWORD/EMAIL_PASSWORD/PHONE_PASSWORD/PHONE_CODE/THIRD_WECHAT/THIRD_QQ',
     login_ip VARCHAR(64) COMMENT '登录IP',
     login_location VARCHAR(200) COMMENT '登录地点',
     user_agent VARCHAR(500) COMMENT '用户代理',
@@ -228,8 +261,34 @@ CREATE TABLE sys_login_log (
     INDEX idx_user_id (user_id),
     INDEX idx_username (username),
     INDEX idx_login_time (login_time),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_login_type (login_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='登录日志表';
+```
+
+#### sys_verification_code (验证码表)
+```sql
+CREATE TABLE sys_verification_code (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '验证码ID',
+    tenant_id BIGINT NOT NULL COMMENT '租户ID',
+    receiver VARCHAR(128) NOT NULL COMMENT '接收者（手机号/邮箱）',
+    code_type VARCHAR(20) NOT NULL COMMENT '验证码类型：LOGIN/REGISTER/RESET_PASSWORD/BIND_PHONE/BIND_EMAIL',
+    code VARCHAR(20) NOT NULL COMMENT '验证码',
+    biz_id VARCHAR(128) COMMENT '业务ID（短信服务商返回）',
+    expire_time DATETIME NOT NULL COMMENT '过期时间',
+    used TINYINT DEFAULT 0 COMMENT '是否已使用：0-未使用，1-已使用',
+    used_time DATETIME COMMENT '使用时间',
+    ip_address VARCHAR(64) COMMENT '请求IP',
+    send_status TINYINT DEFAULT 1 COMMENT '发送状态：0-失败，1-成功',
+    send_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发送时间',
+    created_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_tenant_id (tenant_id),
+    INDEX idx_receiver (receiver),
+    INDEX idx_code_type (code_type),
+    INDEX idx_expire_time (expire_time),
+    INDEX idx_used (used),
+    INDEX idx_send_status (send_status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='验证码表';
 ```
 
 ### 2.6 系统配置表
