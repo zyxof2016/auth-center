@@ -1,5 +1,6 @@
 package com.auth.center.common.dto;
 
+import com.auth.center.common.exception.ErrorCode;
 import java.io.Serializable;
 
 /**

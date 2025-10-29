@@ -433,30 +433,78 @@ CREATE TABLE sys_storage_config (
 
 ## 5. 数据库初始化脚本
 
-### 5.1 基础数据初始化
+### 5.1 数据库初始化说明
+项目提供了完整的数据库初始化脚本，位于 `scripts/` 目录下：
+
+- **`scripts/init-database.sql`**: 数据库表结构创建脚本
+- **`scripts/init-data.sql`**: 基础数据初始化脚本
+
+### 5.2 初始化步骤
+
+#### 5.2.1 创建数据库
 ```sql
--- 初始化默认租户
+CREATE DATABASE auth_center DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+#### 5.2.2 执行初始化脚本
+```bash
+# 导入表结构
+mysql -u root -p auth_center < scripts/init-database.sql
+
+# 导入基础数据
+mysql -u root -p auth_center < scripts/init-data.sql
+```
+
+#### 5.2.3 Docker Compose自动初始化
+如果使用Docker Compose部署，数据库会自动初始化：
+```bash
+cd scripts && docker-compose up -d
+```
+
+### 5.3 基础数据初始化内容
+初始化脚本包含以下基础数据：
+
+#### 5.3.1 默认租户
+```sql
+-- 默认租户信息
 INSERT INTO sys_tenant (id, tenant_code, tenant_name, status, description) 
 VALUES (1, 'default', '默认租户', 1, '系统默认租户');
+```
 
--- 初始化超级管理员用户
+#### 5.3.2 超级管理员用户
+```sql
+-- 超级管理员用户（密码：123456）
 INSERT INTO sys_user (id, tenant_id, username, password, real_name, status) 
 VALUES (1, 1, 'admin', '$2a$10$r3xMLRr7s8Q7ZqB6N9Yz0.L8zV7nV8Y7aN8Y7zV6nB9Y7zV6nB9Y7zV6', '超级管理员', 1);
+```
 
--- 初始化系统角色
+#### 5.3.3 系统角色和权限
+```sql
+-- 系统角色
 INSERT INTO sys_role (id, tenant_id, role_code, role_name, role_type, status) 
 VALUES (1, 1, 'super_admin', '超级管理员', 1, 1);
 
--- 初始化用户角色关联
+-- 用户角色关联
 INSERT INTO sys_user_role (user_id, role_id, created_by) 
 VALUES (1, 1, 1);
 
--- 初始化系统菜单
+-- 系统菜单
 INSERT INTO sys_menu (id, tenant_id, parent_id, menu_name, menu_type, path, perms, icon, sort_order) 
 VALUES 
 (1, 1, 0, '系统管理', 1, '/system', NULL, 'el-icon-setting', 1),
 (2, 1, 1, '用户管理', 2, '/system/user', 'system:user:list', 'el-icon-user', 1),
 (3, 1, 1, '角色管理', 2, '/system/role', 'system:role:list', 'el-icon-s-custom', 2);
+```
+
+#### 5.3.4 OAuth2客户端配置
+```sql
+-- 默认OAuth2客户端
+INSERT INTO sys_client (id, tenant_id, client_id, client_secret, client_name, client_type, 
+                       authorized_grant_types, redirect_uris, scope, access_token_validity, 
+                       refresh_token_validity, status) 
+VALUES (1, 1, 'web_client', '$2a$10$r3xMLRr7s8Q7ZqB6N9Yz0.L8zV7nV8Y7aN8Y7zV6nB9Y7zV6nB9Y7zV6', 
+        'Web客户端', 1, 'authorization_code,password,refresh_token', 
+        'http://localhost:3000/callback', 'read,write', 7200, 604800, 1);
 ```
 
 ## 6. 数据库监控指标

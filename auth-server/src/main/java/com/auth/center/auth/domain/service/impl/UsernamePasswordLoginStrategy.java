@@ -40,7 +40,7 @@ public class UsernamePasswordLoginStrategy implements LoginStrategy {
         validateUsernamePassword(request);
         
         // 2. 查询用户信息（使用Feign客户端调用user-service）
-        SingleResponse<UserDTO> userResponse = userServiceClient.getUserByUsername(request.getUsername());
+        SingleResponse<UserDTO> userResponse = userServiceClient.getUserByUsername(1L, request.getUsername());
         if (!userResponse.isSuccess() || userResponse.getData() == null) {
             throw new IllegalArgumentException("用户不存在");
         }
@@ -62,7 +62,7 @@ public class UsernamePasswordLoginStrategy implements LoginStrategy {
         recordLoginLog(user, LoginType.USERNAME, request.getClientIp());
         
         // 7. 更新用户登录信息
-        userServiceClient.updateLoginInfo(user.getId(), request.getClientIp(), String.valueOf(System.currentTimeMillis()));
+        userServiceClient.updateLoginInfo(user.getId(), request.getClientIp());
         
         return buildLoginResult(tokens, user);
     }

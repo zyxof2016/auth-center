@@ -81,7 +81,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./docs/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./scripts/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql
 
   redis:
     image: redis:7.0-alpine
@@ -100,14 +101,122 @@ services:
     build: ./auth-gateway
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - nacos
       - redis
+      - mysql
 
-  frontend:
-    build: ./frontend
+  auth-server:
+    build: ./auth-server
     ports:
-      - "3000:3000"
+      - "8001:8001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8002:8002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  role-service:
+    build: ./role-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  client-service:
+    build: ./client-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  log-service:
+    build: ./log-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  monitor-service:
+    build: ./monitor-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  file-service:
+    build: ./file-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  message-service:
+    build: ./message-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
+
+  role-service:
+    build: ./role-service
+    ports:
+      - "8003:8003"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - nacos
+      - redis
+      - mysql
 
 volumes:
   mysql_data:
@@ -116,13 +225,19 @@ volumes:
 #### 2.2.2 启动命令
 ```bash
 # 一键启动所有服务
-docker-compose up -d
+cd scripts && docker-compose up -d
 
 # 查看服务状态
 docker-compose ps
 
-# 查看日志
-docker-compose logs -f auth-gateway
+# 查看服务日志
+docker-compose logs -f auth-server
+
+# 停止服务
+docker-compose down
+
+# 重新构建并启动
+docker-compose up --build -d
 ```
 
 ## 3. 生产环境部署

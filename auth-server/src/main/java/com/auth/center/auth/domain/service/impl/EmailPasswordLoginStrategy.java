@@ -40,7 +40,7 @@ public class EmailPasswordLoginStrategy implements LoginStrategy {
         validateEmailPassword(request);
         
         // 2. 查询用户信息（使用Feign客户端调用user-service）
-        SingleResponse<UserDTO> userResponse = userServiceClient.getUserByEmail(request.getEmail());
+        SingleResponse<UserDTO> userResponse = userServiceClient.getUserByEmail(1L, request.getEmail());
         if (!userResponse.isSuccess() || userResponse.getData() == null) {
             throw new IllegalArgumentException("用户不存在");
         }
@@ -62,7 +62,7 @@ public class EmailPasswordLoginStrategy implements LoginStrategy {
         recordLoginLog(user, LoginType.EMAIL_PASSWORD, request.getClientIp());
         
         // 7. 更新用户登录信息
-        userServiceClient.updateLoginInfo(user.getId(), request.getClientIp(), String.valueOf(System.currentTimeMillis()));
+        userServiceClient.updateLoginInfo(user.getId(), request.getClientIp());
         
         return buildLoginResult(tokens, user);
     }

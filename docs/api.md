@@ -9,6 +9,33 @@
 - **认证方式**: Bearer Token
 - **请求头**: `Content-Type: application/json`
 - **多租户支持**: 通过`X-Tenant-Id`请求头传递租户ID
+- **基础URL**: `http://localhost:8080` (网关地址)
+
+### 1.4 服务端口配置
+
+#### 微服务端口分配
+| 服务名称 | 端口 | 服务路径 | 说明 |
+|---------|------|----------|------|
+| auth-gateway | 8080 | / | API网关服务 |
+| auth-server | 8001 | /auth | 认证服务 |
+| user-service | 8002 | /api/users | 用户服务 |
+| role-service | 8082 | /api/roles | 角色服务 |
+| client-service | 8083 | /api/clients | 客户端服务 |
+| log-service | 8084 | /api/logs | 日志服务 |
+| monitor-service | 8085 | /api/monitor | 监控服务 |
+| file-service | 8086 | /api/files | 文件服务 |
+| message-service | 8087 | /api/messages | 消息服务 |
+| notification-service | 8088 | /api/notifications | 通知服务 |
+
+#### 基础设施端口
+| 组件 | 端口 | 说明 |
+|------|------|------|
+| Nacos | 8848 | 服务注册与发现 |
+| Redis | 6379 | 缓存服务 |
+| MySQL | 3306 | 数据库服务 |
+| Sentinel Dashboard | 8089 | 流量控制面板 |
+| MinIO | 9000/9001 | 对象存储服务 |
+| RocketMQ | 9876 | 消息队列服务 |
 
 ### 1.2 响应规范（基于COLA框架）
 
@@ -42,6 +69,59 @@ MultiResponse.of(userList);
 
 // 分页数据响应
 PageResponse.of(pageData, pageNum, pageSize, total);
+```
+
+### 1.3 服务间调用规范
+
+#### Feign客户端调用
+项目使用Spring Cloud OpenFeign进行服务间调用，所有Feign客户端接口位于`common-web`模块中：
+
+```java
+// 用户服务Feign客户端
+@FeignClient(name = "user-service", path = "/api/users")
+public interface UserServiceClient {
+    
+    @GetMapping("/{id}")
+    SingleResponse<UserDTO> getUserById(@PathVariable("id") Long id);
+    
+    @GetMapping("/username/{username}")
+    SingleResponse<UserDTO> getUserByUsername(@PathVariable("username") String username);
+}
+
+// 角色服务Feign客户端
+@FeignClient(name = "role-service", path = "/api/roles")
+public interface RoleServiceClient {
+    
+    @GetMapping("/user/{userId}")
+    MultiResponse<RoleDTO> getUserRoles(@PathVariable("userId") Long userId);
+}
+```
+
+#### 服务间调用示例
+```java
+@Service
+public class AuthService {
+    
+    @Autowired
+    private UserServiceClient userServiceClient;
+    
+    @Autowired
+    private RoleServiceClient roleServiceClient;
+    
+    public UserInfoDTO getUserInfo(Long userId) {
+        // 调用用户服务获取用户信息
+        SingleResponse<UserDTO> userResponse = userServiceClient.getUserById(userId);
+        
+        // 调用角色服务获取用户角色
+        MultiResponse<RoleDTO> roleResponse = roleServiceClient.getUserRoles(userId);
+        
+        // 构建用户信息
+        return UserInfoDTO.builder()
+            .user(userResponse.getData())
+            .roles(roleResponse.getData())
+            .build();
+    }
+}
 ```
 
 ### 1.3 错误码规范（基于COLA ErrorCode）

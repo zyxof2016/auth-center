@@ -184,7 +184,8 @@ auth-center/
 - **JDK**: 8+
 - **MySQL**: 8.0+
 - **Redis**: 7.0+
-- **Node.js**: 16+
+- **Nacos**: 2.2.x（服务注册与发现）
+- **RocketMQ**: 5.0+（消息队列，可选）
 - **对象存储**: MinIO/OSS/S3（可选，用于文件存储）
 
 ### 启动步骤
@@ -192,77 +193,131 @@ auth-center/
 #### 1. 环境准备
 ```bash
 # 启动Nacos注册中心
-docker run --name nacos -p 8848:8848 nacos/nacos-server:latest
+docker run --name nacos -p 8848:8848 nacos/nacos-server:2.2.3
 
 # 启动Redis服务
 docker run --name redis -p 6379:6379 redis:7.0-alpine
 
 # 启动MinIO（文件存储）
 docker run --name minio -p 9000:9000 -p 9001:9001 minio/minio server /data --console-address ":9001"
+
+# 启动RocketMQ（消息队列）
+docker run --name rocketmq -p 9876:9876 -p 10911:10911 -p 10909:10909 apache/rocketmq:5.0.0
 ```
 
 #### 2. 数据库初始化
 ```sql
--- 创建数据库和导入脚本
-CREATE DATABASE auth_center;
--- 导入 docs/database.md 中的表结构
+-- 创建数据库
+CREATE DATABASE auth_center DEFAULT CHARACTER SET utf8mb4;
+
+-- 导入初始化脚本
+mysql -u root -p auth_center < scripts/init-database.sql
+mysql -u root -p auth_center < scripts/init-data.sql
 ```
 
 #### 3. 后端服务启动
 ```bash
-# 启动网关服务
+# 编译整个项目
+mvn clean install
+
+# 启动网关服务 (端口: 8080)
 cd auth-gateway && mvn spring-boot:run
 
-# 启动认证服务  
+# 启动认证服务 (端口: 8001)  
 cd auth-server && mvn spring-boot:run
 
-# 启动其他微服务...
+# 启动用户服务 (端口: 8002)
+cd user-service && mvn spring-boot:run
+
+# 启动角色服务 (端口: 8082)
+cd role-service && mvn spring-boot:run
+
+# 启动客户端服务 (端口: 8083)
+cd client-service && mvn spring-boot:run
+
+# 启动日志服务 (端口: 8084)
+cd log-service && mvn spring-boot:run
+
+# 启动监控服务 (端口: 8085)
+cd monitor-service && mvn spring-boot:run
+
+# 启动文件服务 (端口: 8086)
+cd file-service && mvn spring-boot:run
+
+# 启动消息服务 (端口: 8087)
+cd message-service && mvn spring-boot:run
+
+# 启动通知服务 (端口: 8088)
+cd notification-service && mvn spring-boot:run
 ```
 
-#### 4. 前端应用启动
+#### 4. Docker Compose一键启动（推荐）
 ```bash
-# 安装依赖
-npm install
+# 使用Docker Compose启动所有服务
+cd scripts && docker-compose up -d
 
-# 启动开发服务器
-npm run dev
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f auth-server
 ```
 
-### 🧪 测试大文件上传
+### 🧪 测试API接口
 
-#### 前端代码示例
-```javascript
-// 使用大文件上传组件
-<LargeFileUploader 
-  :chunk-size="5 * 1024 * 1024"
-  :max-size="2 * 1024 * 1024 * 1024"
-  @progress="handleProgress"
-  @success="handleSuccess"
-  @error="handleError"
-/>
-
-// 手动控制上传
-const uploader = new LargeFileUploader(file, 5 * 1024 * 1024)
-await uploader.initUpload()
-await uploader.uploadAllChunks()
-const fileInfo = await uploader.completeUpload()
-```
-
-#### API调用示例
+#### 用户登录测试
 ```bash
-# 初始化大文件上传
-curl -X POST /api/files/large/init \
-  -H "Authorization: Bearer {token}" \
+# 账号密码登录 (通过网关:8080)
+curl -X POST http://localhost:8080/api/auth/login/password \
+  -H "Content-Type: application/json" \
   -d '{
-    "fileName": "large_video.mp4",
-    "fileSize": 104857600,
-    "chunkSize": 5242880
+    "loginType": "USERNAME",
+    "username": "admin",
+    "password": "123456",
+    "captcha": "abcd",
+    "captchaId": "captcha_123456"
   }'
 
-# 上传分片
-curl -X PUT /api/files/large/upload/{uploadId}/1 \
-  -H "Content-Type: application/octet-stream" \
-  --data-binary @chunk1.dat
+# 手机号验证码登录 (通过网关:8080)
+curl -X POST http://localhost:8080/api/auth/login/code \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "13800138000",
+    "code": "123456",
+    "bizId": "sms_1234567890"
+  }'
+```
+
+#### 用户管理测试
+```bash
+# 获取用户列表（通过网关:8080，需要认证）
+curl -X GET http://localhost:8080/api/users \
+  -H "Authorization: Bearer {access_token}" \
+  -H "Content-Type: application/json"
+
+# 创建新用户（通过网关:8080，需要认证）
+curl -X POST http://localhost:8080/api/users \
+  -H "Authorization: Bearer {access_token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "testuser",
+    "password": "123456",
+    "realName": "测试用户",
+    "email": "test@example.com",
+    "phone": "13800138001"
+  }'
+```
+
+#### 直接访问微服务（开发调试）
+```bash
+# 直接访问认证服务 (端口:8001)
+curl -X GET http://localhost:8001/auth/health
+
+# 直接访问用户服务 (端口:8002)
+curl -X GET http://localhost:8002/actuator/health
+
+# 直接访问角色服务 (端口:8082)
+curl -X GET http://localhost:8082/actuator/health
 ```
 
 ## 📦 部署说明

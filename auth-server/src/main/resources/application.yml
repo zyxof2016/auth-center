@@ -1,53 +1,37 @@
-# Spring Boot配置
 spring:
   application:
     name: auth-server
   
-  # 数据源配置
-  datasource:
-    url: jdbc:mysql://localhost:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  
-  # Redis配置
-  redis:
-    host: localhost
-    port: 6379
-    password: 
-    database: 0
-    timeout: 3000
-  
-  # 服务发现配置
   cloud:
     nacos:
+      username: nacos
+      password: nacos
       discovery:
         server-addr: localhost:8848
         namespace: public
         group: DEFAULT_GROUP
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+        namespace: public
+        group: DEFAULT_GROUP
+        shared-configs[0]:
+          data-id: common-datasource.yml
+          group: DEFAULT_GROUP
+          refresh: true
+        shared-configs[1]:
+          data-id: common-redis.yml
+          group: DEFAULT_GROUP
+          refresh: true
+        extension-configs[0]:
+          data-id: auth-server.yml
+          group: DEFAULT_GROUP
+          refresh: true
   
   # 配置文件包含
   config:
     import:
       - classpath:application-auth.yml
-
-# MyBatis Plus配置
-mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    db-config:
-      id-type: auto
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
-
-# 服务端口
-server:
-  port: 8081
-  servlet:
-    context-path: /auth
 
 # 日志配置
 logging:

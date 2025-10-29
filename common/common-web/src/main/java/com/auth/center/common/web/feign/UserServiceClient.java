@@ -15,19 +15,19 @@ public interface UserServiceClient {
      * 根据用户名查询用户
      */
     @GetMapping("/username/{username}")
-    SingleResponse<UserDTO> getUserByUsername(@PathVariable("username") String username);
+    SingleResponse<UserDTO> getUserByUsername(@RequestParam("tenantId") Long tenantId, @PathVariable("username") String username);
     
     /**
      * 根据手机号查询用户
      */
     @GetMapping("/phone/{phone}")
-    SingleResponse<UserDTO> getUserByPhone(@PathVariable("phone") String phone);
+    SingleResponse<UserDTO> getUserByPhone(@RequestParam("tenantId") Long tenantId, @PathVariable("phone") String phone);
     
     /**
      * 根据邮箱查询用户
      */
     @GetMapping("/email/{email}")
-    SingleResponse<UserDTO> getUserByEmail(@PathVariable("email") String email);
+    SingleResponse<UserDTO> getUserByEmail(@RequestParam("tenantId") Long tenantId, @PathVariable("email") String email);
     
     /**
      * 根据用户ID查询用户
@@ -45,8 +45,7 @@ public interface UserServiceClient {
     /**
      * 更新用户登录信息
      */
-    @PutMapping("/{userId}/login-info")
-    SingleResponse<Void> updateLoginInfo(@PathVariable("userId") Long userId,
-                                       @RequestParam("lastLoginIp") String lastLoginIp,
-                                       @RequestParam("lastLoginTime") String lastLoginTime);
+    @PutMapping("/{id}/login-info")
+    Response updateLoginInfo(@PathVariable("id") Long id,
+                           @RequestParam("loginIp") String loginIp);
 }

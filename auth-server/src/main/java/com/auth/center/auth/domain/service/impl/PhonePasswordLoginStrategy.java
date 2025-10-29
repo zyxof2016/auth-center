@@ -40,7 +40,7 @@ public class PhonePasswordLoginStrategy implements LoginStrategy {
         validatePhonePassword(request);
         
         // 2. 查询用户信息（使用Feign客户端调用user-service）
-        SingleResponse<UserDTO> userResponse = userServiceClient.getUserByPhone(request.getPhone());
+        SingleResponse<UserDTO> userResponse = userServiceClient.getUserByPhone(1L, request.getPhone());
         if (!userResponse.isSuccess() || userResponse.getData() == null) {
             throw new IllegalArgumentException("用户不存在");
         }
@@ -62,7 +62,7 @@ public class PhonePasswordLoginStrategy implements LoginStrategy {
         recordLoginLog(user, LoginType.PHONE_PASSWORD, request.getClientIp());
         
         // 7. 更新用户登录信息
-        userServiceClient.updateLoginInfo(user.getId(), request.getClientIp(), String.valueOf(System.currentTimeMillis()));
+        userServiceClient.updateLoginInfo(user.getId(), request.getClientIp());
         
         return buildLoginResult(tokens, user);
     }

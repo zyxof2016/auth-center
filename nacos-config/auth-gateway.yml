@@ -1,0 +1,72 @@
+# auth-gateway 服务配置
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-server
+          uri: lb://auth-server
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - StripPrefix=1
+        - id: role-service
+          uri: lb://role-service
+          predicates:
+            - Path=/api/role/**
+          filters:
+            - StripPrefix=1
+        - id: client-service
+          uri: lb://client-service
+          predicates:
+            - Path=/api/client/**
+          filters:
+            - StripPrefix=1
+        - id: log-service
+          uri: lb://log-service
+          predicates:
+            - Path=/api/log/**
+          filters:
+            - StripPrefix=1
+        - id: file-service
+          uri: lb://file-service
+          predicates:
+            - Path=/api/file/**
+          filters:
+            - StripPrefix=1
+        - id: message-service
+          uri: lb://message-service
+          predicates:
+            - Path=/api/message/**
+          filters:
+            - StripPrefix=1
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notification/**
+          filters:
+            - StripPrefix=1
+
+# Sentinel配置
+sentinel:
+  transport:
+    dashboard: localhost:8089
+  eager: true
+
+# 日志配置
+logging:
+  level:
+    com.auth.center.gateway: debug
+    org.springframework.cloud.gateway: debug

@@ -1,5 +1,7 @@
 package com.auth.center.common.dto;
 
+import com.auth.center.common.exception.ErrorCode;
+
 /**
  * 单条数据响应
  * 
@@ -43,7 +45,7 @@ public class SingleResponse<T> extends Response {
     /**
      * 构建失败响应
      */
-    public static <T> SingleResponse<T> buildFailure(String errCode, String errMessage) {
+    public static <T> SingleResponse<T> buildFailureResponse(String errCode, String errMessage) {
         SingleResponse<T> response = new SingleResponse<>();
         response.setSuccess(false);
         response.setErrCode(errCode);
@@ -55,7 +57,7 @@ public class SingleResponse<T> extends Response {
      * 构建失败响应（使用错误码枚举）
      */
     public static <T> SingleResponse<T> buildFailure(ErrorCode errorCode) {
-        return buildFailure(errorCode.getCode(), errorCode.getMessage());
+        return buildFailureResponse(errorCode.getCode(), errorCode.getMessage());
     }
 
     /**

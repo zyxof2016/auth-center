@@ -1,0 +1,311 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: auth-center-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: Root123456!
+      MYSQL_DATABASE: auth_center
+      MYSQL_USER: auth_user
+      MYSQL_PASSWORD: Auth123456!
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./init-data.sql:/docker-entrypoint-initdb.d/init-data.sql
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-buffer-pool-size=256M
+    networks:
+      - auth-center-network
+
+  # Redis缓存
+  redis:
+    image: redis:7.0-alpine
+    container_name: auth-center-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass Redis123456!
+    volumes:
+      - redis_data:/data
+    networks:
+      - auth-center-network
+
+  # Nacos服务发现和配置中心
+  nacos:
+    image: nacos/nacos-server:v2.2.3
+    container_name: auth-center-nacos
+    restart: unless-stopped
+    environment:
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=Root123456!
+      - NACOS_AUTH_ENABLE=true
+      - NACOS_AUTH_IDENTITY_KEY=auth-center
+      - NACOS_AUTH_IDENTITY_VALUE=auth-center-secret
+    ports:
+      - "8848:8848"
+    volumes:
+      - nacos_data:/home/nacos/data
+      - nacos_logs:/home/nacos/logs
+    depends_on:
+      - mysql
+    networks:
+      - auth-center-network
+
+  # MinIO文件存储
+  minio:
+    image: minio/minio:latest
+    container_name: auth-center-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - auth-center-network
+
+  # 网关服务
+  auth-gateway:
+    build:
+      context: ../auth-gateway
+      dockerfile: Dockerfile
+    container_name: auth-center-gateway
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=Redis123456!
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nacos
+      - redis
+    networks:
+      - auth-center-network
+
+  # 认证服务
+  auth-server:
+    build:
+      context: ../auth-server
+      dockerfile: Dockerfile
+    container_name: auth-center-auth-server
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PASSWORD=Redis123456!
+    depends_on:
+      - mysql
+      - nacos
+      - redis
+    networks:
+      - auth-center-network
+
+  # 用户服务
+  user-service:
+    build:
+      context: ../user-service
+      dockerfile: Dockerfile
+    container_name: auth-center-user-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+  # 角色服务
+  role-service:
+    build:
+      context: ../role-service
+      dockerfile: Dockerfile
+    container_name: auth-center-role-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+  # 客户端服务
+  client-service:
+    build:
+      context: ../client-service
+      dockerfile: Dockerfile
+    container_name: auth-center-client-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+  # 日志服务
+  log-service:
+    build:
+      context: ../log-service
+      dockerfile: Dockerfile
+    container_name: auth-center-log-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+  # 监控服务
+  monitor-service:
+    build:
+      context: ../monitor-service
+      dockerfile: Dockerfile
+    container_name: auth-center-monitor-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+  # 文件服务
+  file-service:
+    build:
+      context: ../file-service
+      dockerfile: Dockerfile
+    container_name: auth-center-file-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    depends_on:
+      - mysql
+      - nacos
+      - minio
+    networks:
+      - auth-center-network
+
+  # 消息服务
+  message-service:
+    build:
+      context: ../message-service
+      dockerfile: Dockerfile
+    container_name: auth-center-message-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+  # 通知服务
+  notification-service:
+    build:
+      context: ../notification-service
+      dockerfile: Dockerfile
+    container_name: auth-center-notification-service
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_USERNAME=nacos
+      - SPRING_CLOUD_NACOS_PASSWORD=nacos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_center?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=Auth123456!
+    depends_on:
+      - mysql
+      - nacos
+    networks:
+      - auth-center-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  nacos_data:
+  nacos_logs:
+  minio_data:
+
+networks:
+  auth-center-network:
+    driver: bridge
