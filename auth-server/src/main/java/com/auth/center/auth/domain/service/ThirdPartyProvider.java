@@ -64,32 +64,3 @@ public interface ThirdPartyProvider {
      */
     boolean validateConfig();
 }
-
-/**
- * 第三方用户信息
- */
-class ThirdPartyUserInfo {
-    private String openId;
-    private String unionId;
-    private String nickname;
-    private String avatar;
-    private String email;
-    private String phone;
-    private Integer gender;
-    private String location;
-    private Map<String, Object> rawData;
-    
-    // getter/setter省略
-}
-
-/**
- * 令牌信息
- */
-class TokenInfo {
-    private String accessToken;
-    private String refreshToken;
-    private Long expiresIn;
-    private String scope;
-    
-    // getter/setter省略
-}

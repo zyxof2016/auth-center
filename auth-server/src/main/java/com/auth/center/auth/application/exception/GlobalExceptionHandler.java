@@ -1,8 +1,6 @@
 package com.auth.center.auth.application.exception;
 
 import com.auth.center.common.dto.Response;
-import com.auth.center.common.exception.ErrorCode;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * 全局异常处理器
  */
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
@@ -21,8 +18,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Response handleAuthException(AuthException e) {
-        log.warn("认证异常: {} - {}", e.getErrorCode(), e.getErrorMessage());
-        return Response.buildFailure(e.getErrorCode(), e.getErrorMessage());
+        return Response.buildFailure("AUTH_ERROR", e.getMessage());
     }
     
     /**
@@ -31,8 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response handleIllegalArgumentException(IllegalArgumentException e) {
-        log.warn("参数验证异常: {}", e.getMessage());
-        return Response.buildFailure(ErrorCode.PARAM_FORMAT_ERROR.getCode(), e.getMessage());
+        return Response.buildFailure("PARAM_FORMAT_ERROR", e.getMessage());
     }
     
     /**
@@ -41,8 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response handleRuntimeException(RuntimeException e) {
-        log.error("运行时异常: {}", e.getMessage(), e);
-        return Response.buildFailure(ErrorCode.SYSTEM_ERROR);
+        return Response.buildFailure("SYSTEM_ERROR", "System error occurred");
     }
     
     /**
@@ -51,7 +45,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response handleException(Exception e) {
-        log.error("系统异常: {}", e.getMessage(), e);
-        return Response.buildFailure(ErrorCode.SYSTEM_ERROR);
+        return Response.buildFailure("SYSTEM_ERROR", "System error occurred");
     }
+    
+
 }
