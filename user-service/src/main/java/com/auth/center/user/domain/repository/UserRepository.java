@@ -1,11 +1,9 @@
 package com.auth.center.user.domain.repository;
 
-import com.auth.center.user.domain.entity.UserEntity;
+import com.auth.center.user.domain.entity.User;
 import com.auth.center.user.domain.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Optional;
 
 /**
  * 用户仓库接口
@@ -15,17 +13,17 @@ public interface UserRepository {
     /**
      * 保存用户
      */
-    UserEntity save(UserEntity userEntity);
+    User save(User user);
     
     /**
      * 根据ID查找用户
      */
-    Optional<UserEntity> findById(Long id);
+    User findById(Long id);
     
     /**
      * 根据用户名查找用户
      */
-    Optional<UserEntity> findByUsername(Long tenantId, String username);
+    User findByUsername(Long tenantId, String username);
     
     /**
      * 检查用户名是否存在
@@ -45,10 +43,15 @@ public interface UserRepository {
     /**
      * 根据条件分页查询用户
      */
-    Page<UserEntity> findByConditions(Long tenantId, String username, String realName, UserStatus status, Pageable pageable);
+    Page<User> findByConditions(Long tenantId, String username, String realName, UserStatus status, Pageable pageable);
     
     /**
      * 删除用户
      */
-    void delete(UserEntity userEntity);
+    void deleteById(Long id);
+    
+    /**
+     * 更新用户
+     */
+    User update(User user);
 }

@@ -27,24 +27,48 @@ public class LogApplicationService {
     private final OperationLogRepository operationLogRepository;
     private final LoginLogRepository loginLogRepository;
     
-    /**
-     * 记录操作日志
-     */
-    public Response recordOperationLog(OperationLogDTO operationLogDTO) {
-        OperationLogEntity operationLogEntity = convertToOperationEntity(operationLogDTO);
-        operationLogEntity.setCreatedTime(LocalDateTime.now());
-        operationLogRepository.save(operationLogEntity);
-        return Response.buildSuccess();
-    }
-    
-    /**
-     * 记录登录日志
-     */
-    public Response recordLoginLog(LoginLogDTO loginLogDTO) {
-        LoginLogEntity loginLogEntity = convertToLoginEntity(loginLogDTO);
-        loginLogEntity.setLoginTime(LocalDateTime.now());
-        loginLogRepository.save(loginLogEntity);
-        return Response.buildSuccess();
+    /**
+     * 记录操作日志
+     */
+    public Response recordOperationLog(OperationLogDTO operationLogDTO) {
+        OperationLogEntity operationLogEntity = OperationLogEntity.create(
+                operationLogDTO.getTenantId(),
+                operationLogDTO.getUserId(),
+                operationLogDTO.getUsername(),
+                operationLogDTO.getOperationType(),
+                operationLogDTO.getOperationModule(),
+                operationLogDTO.getOperationDesc(),
+                operationLogDTO.getRequestMethod(),
+                operationLogDTO.getRequestUrl(),
+                operationLogDTO.getRequestParams(),
+                operationLogDTO.getResponseResult(),
+                operationLogDTO.getIpAddress(),
+                operationLogDTO.getUserAgent(),
+                operationLogDTO.getExecuteTime(),
+                operationLogDTO.getStatus(),
+                operationLogDTO.getErrorMessage()
+        );
+        operationLogRepository.save(operationLogEntity);
+        return Response.buildSuccess();
+    }
+    
+    /**
+     * 记录登录日志
+     */
+    public Response recordLoginLog(LoginLogDTO loginLogDTO) {
+        LoginLogEntity loginLogEntity = LoginLogEntity.create(
+                loginLogDTO.getTenantId(),
+                loginLogDTO.getUserId(),
+                loginLogDTO.getUsername(),
+                loginLogDTO.getLoginType(),
+                loginLogDTO.getLoginIp(),
+                loginLogDTO.getLoginLocation(),
+                loginLogDTO.getUserAgent(),
+                loginLogDTO.getStatus(),
+                loginLogDTO.getFailReason()
+        );
+        loginLogRepository.save(loginLogEntity);
+        return Response.buildSuccess();
     }
     
     /**
@@ -62,7 +86,7 @@ public class LogApplicationService {
                 .map(this::convertToOperationDTO)
                 .collect(Collectors.toList());
         
-        return PageResponse.of(logDTOs, logPage.getTotalElements(), page, size);
+        return PageResponse.of(logDTOs, page, size, logPage.getTotalElements());
     }
     
     /**
@@ -80,7 +104,7 @@ public class LogApplicationService {
                 .map(this::convertToLoginDTO)
                 .collect(Collectors.toList());
         
-        return PageResponse.of(logDTOs, logPage.getTotalElements(), page, size);
+        return PageResponse.of(logDTOs, page, size, logPage.getTotalElements());
     }
     
     /**

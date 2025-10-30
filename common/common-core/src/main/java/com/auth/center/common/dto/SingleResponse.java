@@ -1,6 +1,6 @@
 package com.auth.center.common.dto;
 
-import com.auth.center.common.exception.ErrorCode;
+import com.auth.center.common.exception.CommonErrorCode;
 
 /**
  * 单条数据响应
@@ -27,8 +27,8 @@ public class SingleResponse<T> extends Response {
         return "SingleResponse{" +
                 "data=" + data +
                 ", success=" + isSuccess() +
-                ", errCode='" + getErrCode() + '\'' +
-                ", errMessage='" + getErrMessage() + '\'' +
+                ", errCode='" + getCode() + '\'' +
+                ", errMessage='" + getMessage() + '\'' +
                 ", timestamp=" + getTimestamp() +
                 '}';
     }
@@ -36,7 +36,7 @@ public class SingleResponse<T> extends Response {
     /**
      * 构建成功响应
      */
-    public static <T> SingleResponse<T> buildSuccess() {
+    public static <T> SingleResponse<T> buildSingleSuccess() {
         SingleResponse<T> response = new SingleResponse<>();
         response.setSuccess(true);
         return response;
@@ -45,19 +45,19 @@ public class SingleResponse<T> extends Response {
     /**
      * 构建失败响应
      */
-    public static <T> SingleResponse<T> buildFailureResponse(String errCode, String errMessage) {
+    public static <T> SingleResponse<T> buildSingleFailure(String errCode, String errMessage) {
         SingleResponse<T> response = new SingleResponse<>();
         response.setSuccess(false);
-        response.setErrCode(errCode);
-        response.setErrMessage(errMessage);
+        response.setCode(errCode);
+        response.setMessage(errMessage);
         return response;
     }
 
     /**
      * 构建失败响应（使用错误码枚举）
      */
-    public static <T> SingleResponse<T> buildFailure(ErrorCode errorCode) {
-        return buildFailureResponse(errorCode.getCode(), errorCode.getMessage());
+    public static <T> SingleResponse<T> buildSingleFailure(CommonErrorCode errorCode) {
+        return buildSingleFailure(errorCode.getCode(), errorCode.getMessage());
     }
 
     /**

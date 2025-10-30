@@ -1,6 +1,7 @@
 package com.auth.center.common.dto;
 
-import com.auth.center.common.exception.ErrorCode;
+import com.auth.center.common.exception.CommonErrorCode;
+
 import java.io.Serializable;
 
 /**
@@ -16,10 +17,10 @@ public class Response implements Serializable {
     private boolean success;
 
     /** 错误码 */
-    private String errCode;
+    private String code;
 
     /** 错误信息 */
-    private String errMessage;
+    private String message;
 
     /** 时间戳 */
     private long timestamp;
@@ -36,20 +37,20 @@ public class Response implements Serializable {
         this.success = success;
     }
 
-    public String getErrCode() {
-        return errCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setErrCode(String errCode) {
-        this.errCode = errCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getErrMessage() {
-        return errMessage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setErrMessage(String errMessage) {
-        this.errMessage = errMessage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public long getTimestamp() {
@@ -64,8 +65,8 @@ public class Response implements Serializable {
     public String toString() {
         return "Response{" +
                 "success=" + success +
-                ", errCode='" + errCode + '\'' +
-                ", errMessage='" + errMessage + '\'' +
+                ", code='" + code + '\'' +
+                ", message='" + message + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }
@@ -82,25 +83,25 @@ public class Response implements Serializable {
     /**
      * 构建失败响应
      */
-    public static Response buildFailure(String errCode, String errMessage) {
+    public static Response buildFailure(String code, String message) {
         Response response = new Response();
         response.setSuccess(false);
-        response.setErrCode(errCode);
-        response.setErrMessage(errMessage);
+        response.setCode(code);
+        response.setMessage(message);
         return response;
     }
 
     /**
      * 构建失败响应（使用错误码枚举）
      */
-    public static Response buildFailure(ErrorCode errorCode) {
+    public static Response buildFailure(CommonErrorCode errorCode) {
         return buildFailure(errorCode.getCode(), errorCode.getMessage());
     }
 
     /**
      * 构建失败响应（使用错误码枚举和自定义消息）
      */
-    public static Response buildFailure(ErrorCode errorCode, String customMessage) {
+    public static Response buildFailure(CommonErrorCode errorCode, String customMessage) {
         return buildFailure(errorCode.getCode(), customMessage);
     }
 }

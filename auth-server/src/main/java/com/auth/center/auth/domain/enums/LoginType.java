@@ -43,7 +43,12 @@ public enum LoginType {
     /**
      * GitHub登录
      */
-    GITHUB("GITHUB", "GitHub登录");
+    GITHUB("GITHUB", "GitHub登录"),
+    
+    /**
+     * 第三方登录
+     */
+    THIRD_PARTY("THIRD_PARTY", "第三方登录");
     
     private final String code;
     private final String desc;

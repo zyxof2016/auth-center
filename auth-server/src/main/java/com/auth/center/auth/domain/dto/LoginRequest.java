@@ -49,6 +49,11 @@ public class LoginRequest {
     private String bizId;
     
     /**
+     * 第三方登录类型
+     */
+    private String thirdType;
+    
+    /**
      * 图形验证码
      */
     private String captcha;

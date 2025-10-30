@@ -79,4 +79,12 @@ public class MessageController {
     public Response deleteExpiredMessages(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime expireTime) {
         return messageApplicationService.deleteExpiredMessages(expireTime);
     }
+    
+    /**
+     * 根据键查找消息
+     */
+    @GetMapping("/key/{keys}")
+    public SingleResponse<MessageEntity> getMessageByKey(@PathVariable String keys) {
+        return messageApplicationService.getMessageByKey(keys);
+    }
 }

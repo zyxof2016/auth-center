@@ -1,12 +1,13 @@
 package com.auth.center.auth.domain.service;
 
 /**
- * 第三方认证服务接口
+ * 第三方登录服务接口
  */
 public interface ThirdPartyAuthService {
     
     /**
      * 获取第三方登录授权地址
+     *
      * @param thirdType 第三方类型
      * @param redirectUri 回调地址
      * @param state 状态参数
@@ -16,35 +17,43 @@ public interface ThirdPartyAuthService {
     
     /**
      * 处理第三方登录回调
+     *
      * @param thirdType 第三方类型
-     * @param code 授权码
+     * @param authCode 授权码
      * @param state 状态参数
-     * @return 用户信息
+     * @return 登录结果
      */
-    Object handleCallback(String thirdType, String code, String state);
+    com.auth.center.auth.domain.dto.LoginResult handleCallback(String thirdType, String authCode, String state);
     
     /**
      * 绑定第三方账号
-     * @param userId 用户ID
+     *
      * @param thirdType 第三方类型
-     * @param code 授权码
-     * @param state 状态参数
-     * @return 绑定结果
+     * @param userId 用户ID
+     * @param authCode 授权码
      */
-    boolean bindThirdPartyAccount(Long userId, String thirdType, String code, String state);
+    void bindAccount(String thirdType, Long userId, String authCode);
     
     /**
      * 解绑第三方账号
-     * @param userId 用户ID
+     *
      * @param thirdType 第三方类型
-     * @return 解绑结果
+     * @param userId 用户ID
      */
-    boolean unbindThirdPartyAccount(Long userId, String thirdType);
+    void unbindAccount(String thirdType, Long userId);
     
     /**
      * 获取用户绑定的第三方账号列表
+     *
      * @param userId 用户ID
-     * @return 绑定列表
+     * @return 第三方账号列表
      */
-    Object getThirdPartyBindings(Long userId);
+    java.util.List<Object> getBindings(Long userId);
+    
+    /**
+     * 获取第三方登录统计信息
+     *
+     * @return 统计信息
+     */
+    Object getStatistics();
 }

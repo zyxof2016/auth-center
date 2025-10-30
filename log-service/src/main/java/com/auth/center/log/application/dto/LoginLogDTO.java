@@ -46,6 +46,11 @@ public class LoginLogDTO {
     private String loginLocation;
     
     /**
+     * 用户代理
+     */
+    private String userAgent;
+    
+    /**
      * 状态
      */
     private Boolean status;

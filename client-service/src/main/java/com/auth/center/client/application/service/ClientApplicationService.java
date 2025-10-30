@@ -3,13 +3,12 @@ package com.auth.center.client.application.service;
 import com.auth.center.client.application.dto.ClientDTO;
 import com.auth.center.client.domain.entity.ClientEntity;
 import com.auth.center.client.domain.enums.ClientStatus;
-import com.auth.center.client.domain.enums.ClientType;
+import com.auth.center.client.domain.exception.ClientErrorCode;
 import com.auth.center.client.domain.repository.ClientRepository;
 import com.auth.center.common.dto.PageResponse;
 import com.auth.center.common.dto.Response;
 import com.auth.center.common.dto.SingleResponse;
 import com.auth.center.common.exception.BusinessException;
-import com.auth.center.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +33,7 @@ public class ClientApplicationService {
     public SingleResponse<ClientDTO> createClient(ClientDTO clientDTO) {
         // 检查客户端ID是否已存在
         if (clientRepository.existsByClientId(clientDTO.getClientId())) {
-            throw new BusinessException(ErrorCode.CLIENT_ID_EXISTS);
+            throw new BusinessException(ClientErrorCode.CLIENT_ID_EXISTS);
         }
         
         ClientEntity clientEntity = convertToEntity(clientDTO);
@@ -50,7 +49,7 @@ public class ClientApplicationService {
      */
     public SingleResponse<ClientDTO> updateClient(Long id, ClientDTO clientDTO) {
         ClientEntity existingEntity = clientRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CLIENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ClientErrorCode.CLIENT_NOT_FOUND));
         
         // 更新字段
         existingEntity.setClientName(clientDTO.getClientName());
@@ -73,7 +72,7 @@ public class ClientApplicationService {
      */
     public SingleResponse<ClientDTO> getClientById(Long id) {
         ClientEntity clientEntity = clientRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CLIENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ClientErrorCode.CLIENT_NOT_FOUND));
         return SingleResponse.of(convertToDTO(clientEntity));
     }
     
@@ -89,7 +88,7 @@ public class ClientApplicationService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         
-        return PageResponse.of(clientDTOs, clientPage.getTotalElements(), page, size);
+        return PageResponse.of(clientDTOs, page, size, clientPage.getTotalElements());
     }
     
     /**
@@ -97,7 +96,7 @@ public class ClientApplicationService {
      */
     public Response enableClient(Long id) {
         ClientEntity clientEntity = clientRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CLIENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ClientErrorCode.CLIENT_NOT_FOUND));
         
         clientEntity.setStatus(ClientStatus.ENABLED);
         clientEntity.setUpdatedTime(LocalDateTime.now());
@@ -111,7 +110,7 @@ public class ClientApplicationService {
      */
     public Response disableClient(Long id) {
         ClientEntity clientEntity = clientRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CLIENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ClientErrorCode.CLIENT_NOT_FOUND));
         
         clientEntity.setStatus(ClientStatus.DISABLED);
         clientEntity.setUpdatedTime(LocalDateTime.now());
@@ -125,7 +124,7 @@ public class ClientApplicationService {
      */
     public Response deleteClient(Long id) {
         ClientEntity clientEntity = clientRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CLIENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ClientErrorCode.CLIENT_NOT_FOUND));
         
         clientRepository.delete(clientEntity);
         return Response.buildSuccess();
@@ -136,7 +135,7 @@ public class ClientApplicationService {
      */
     public SingleResponse<ClientDTO> getClientByClientId(String clientId) {
         ClientEntity clientEntity = clientRepository.findByClientId(clientId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CLIENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ClientErrorCode.CLIENT_NOT_FOUND));
         return SingleResponse.of(convertToDTO(clientEntity));
     }
     

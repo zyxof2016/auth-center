@@ -1,6 +1,6 @@
 package com.auth.center.common.dto;
 
-import com.auth.center.common.exception.ErrorCode;
+import com.auth.center.common.exception.CommonErrorCode;
 import java.util.List;
 
 /**
@@ -76,8 +76,8 @@ public class PageResponse<T> extends Response {
                 ", total=" + total +
                 ", pages=" + pages +
                 ", success=" + isSuccess() +
-                ", errCode='" + getErrCode() + '\'' +
-                ", errMessage='" + getErrMessage() + '\'' +
+                ", errCode='" + getCode() + '\'' +
+                ", errMessage='" + getMessage() + '\'' +
                 ", timestamp=" + getTimestamp() +
                 '}';
     }
@@ -85,7 +85,7 @@ public class PageResponse<T> extends Response {
     /**
      * 构建成功响应
      */
-    public static <T> PageResponse<T> buildSuccess() {
+    public static <T> PageResponse<T> buildPageSuccess() {
         PageResponse<T> response = new PageResponse<>();
         response.setSuccess(true);
         return response;
@@ -94,19 +94,19 @@ public class PageResponse<T> extends Response {
     /**
      * 构建失败响应
      */
-    public static <T> PageResponse<T> buildFailure(String errCode, String errMessage) {
+    public static <T> PageResponse<T> buildPageFailure(String errCode, String errMessage) {
         PageResponse<T> response = new PageResponse<>();
         response.setSuccess(false);
-        response.setErrCode(errCode);
-        response.setErrMessage(errMessage);
+        response.setCode(errCode);
+        response.setMessage(errMessage);
         return response;
     }
 
     /**
      * 构建失败响应（使用错误码枚举）
      */
-    public static <T> PageResponse<T> buildFailure(ErrorCode errorCode) {
-        return buildFailure(errorCode.getCode(), errorCode.getMessage());
+    public static <T> PageResponse<T> buildPageFailure(CommonErrorCode errorCode) {
+        return buildPageFailure(errorCode.getCode(), errorCode.getMessage());
     }
 
     /**

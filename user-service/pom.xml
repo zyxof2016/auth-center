@@ -27,18 +27,56 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <!-- MyBatis Plus -->
+        <!-- MyBatis -->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.4.1</version>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.3.1</version>
         </dependency>
         
-        <!-- MySQL Driver -->
+        <!-- Spring Data Commons -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+        
+        <!-- MySQL -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Common Modules -->
+        <dependency>
+            <groupId>com.auth.center</groupId>
+            <artifactId>common-infrastructure</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.auth.center</groupId>
+            <artifactId>common-web</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.auth.center</groupId>
+            <artifactId>common-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.auth.center</groupId>
+            <artifactId>common-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         
         <!-- Nacos Discovery -->
@@ -57,19 +95,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
-        
-        <!-- Common Modules -->
-        <dependency>
-            <groupId>com.auth.center</groupId>
-            <artifactId>common-web</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.auth.center</groupId>
-            <artifactId>common-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

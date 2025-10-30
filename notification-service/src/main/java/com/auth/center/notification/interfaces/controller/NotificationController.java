@@ -80,4 +80,12 @@ public class NotificationController {
     public Response markAsRead(@PathVariable Long notificationId) {
         return notificationApplicationService.markAsRead(notificationId);
     }
+    
+    /**
+     * 获取未读通知数量
+     */
+    @GetMapping("/unread-count/{receiver}")
+    public SingleResponse<Long> getUnreadNotificationCount(@PathVariable String receiver) {
+        return notificationApplicationService.getUnreadNotificationCount(receiver);
+    }
 }

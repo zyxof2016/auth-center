@@ -1,110 +1,112 @@
 package com.auth.center.auth.infrastructure.config;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 第三方登录配置 - 插拔式设计
- * 支持动态配置多个第三方登录方式
+ * 第三方登录配置属性
  */
-@Data
-@Configuration
+@Component
 @ConfigurationProperties(prefix = "auth.third-party")
 public class ThirdPartyConfig {
     
     /**
-     * 是否启用第三方登录功能
+     * 是否启用第三方登录
      */
-    private boolean enabled = true;
+    private boolean enabled = false;
     
     /**
-     * 默认回调地址
-     */
-    private String defaultRedirectUri = "http://localhost:8080/auth/callback";
-    
-    /**
-     * 第三方登录提供者配置
-     * key: 提供者类型（如：wechat, qq, alipay, github等）
-     * value: 提供者配置
+     * 提供者配置映射
      */
     private Map<String, ProviderConfig> providers = new HashMap<>();
     
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+    public Map<String, ProviderConfig> getProviders() {
+        return providers;
+    }
+    
+    public void setProviders(Map<String, ProviderConfig> providers) {
+        this.providers = providers;
+    }
+    
     /**
-     * 第三方登录提供者配置类
+     * 提供者配置
      */
-    @Data
     public static class ProviderConfig {
-        /**
-         * 是否启用
-         */
-        private boolean enabled = true;
         
         /**
-         * 提供者名称（用于显示）
-         */
-        private String name;
-        
-        /**
-         * 应用ID/客户端ID
+         * 应用ID
          */
         private String appId;
         
         /**
-         * 应用密钥/客户端密钥
+         * 应用密钥
          */
         private String appSecret;
         
         /**
-         * 授权范围
+         * 回调地址
          */
-        private String scope;
+        private String redirectUri;
         
         /**
-         * 授权地址（可选，不配置则使用默认地址）
+         * 是否启用
          */
-        private String authorizeUrl;
+        private boolean enabled = false;
         
         /**
-         * 令牌地址（可选，不配置则使用默认地址）
-         */
-        private String tokenUrl;
-        
-        /**
-         * 用户信息地址（可选，不配置则使用默认地址）
-         */
-        private String userInfoUrl;
-        
-        /**
-         * 自定义参数
-         */
-        private Map<String, String> customParams = new HashMap<>();
-        
-        /**
-         * 处理类（可选，不配置则使用默认处理类）
+         * 自定义处理类
          */
         private String handlerClass;
         
-        /**
-         * 图标URL（用于前端显示）
-         */
-        private String iconUrl;
+        public String getAppId() {
+            return appId;
+        }
         
-        /**
-         * 排序权重（数字越小越靠前）
-         */
-        private Integer weight = 100;
+        public void setAppId(String appId) {
+            this.appId = appId;
+        }
         
-        /**
-         * 检查配置是否完整
-         */
-        public boolean isConfigComplete() {
-            return appId != null && !appId.trim().isEmpty() 
-                && appSecret != null && !appSecret.trim().isEmpty()
-                && scope != null && !scope.trim().isEmpty();
+        public String getAppSecret() {
+            return appSecret;
+        }
+        
+        public void setAppSecret(String appSecret) {
+            this.appSecret = appSecret;
+        }
+        
+        public String getRedirectUri() {
+            return redirectUri;
+        }
+        
+        public void setRedirectUri(String redirectUri) {
+            this.redirectUri = redirectUri;
+        }
+        
+        public boolean isEnabled() {
+            return enabled;
+        }
+        
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+        
+        public String getHandlerClass() {
+            return handlerClass;
+        }
+        
+        public void setHandlerClass(String handlerClass) {
+            this.handlerClass = handlerClass;
         }
     }
 }

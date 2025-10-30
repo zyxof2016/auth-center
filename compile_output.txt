@@ -1,0 +1,308 @@
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective settings
+[WARNING] 'profiles.profile[local].repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ D:\develop\maven\apache-maven-3.8.1\bin\..\conf\settings.xml
+[WARNING] 'profiles.profile[local].pluginRepositories.pluginRepository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ D:\develop\maven\apache-maven-3.8.1\bin\..\conf\settings.xml
+[WARNING] 
+[INFO] Scanning for projects...
+Downloading from public: http://192.168.99.112:8081/repository/maven-public/com/auth/center/auth-center.all/1.0.0-SNAPSHOT/maven-metadata.xml
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.auth.center:role-service:jar:1.0.0-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: com.auth.center:common-web:jar -> duplicate declaration of version 1.0.0-SNAPSHOT @ line 61, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] auth-center.all                                                    [pom]
+[INFO] common-core                                                        [jar]
+[INFO] common-security                                                    [jar]
+[INFO] common-web                                                         [jar]
+[INFO] common                                                             [pom]
+[INFO] common-infrastructure                                              [jar]
+[INFO] common-client                                                      [jar]
+[INFO] auth-gateway                                                       [jar]
+[INFO] auth-server                                                        [jar]
+[INFO] user-service                                                       [jar]
+[INFO] role-service                                                       [jar]
+[INFO] client-service                                                     [jar]
+[INFO] log-service                                                        [jar]
+[INFO] monitor-service                                                    [jar]
+[INFO] file-service                                                       [jar]
+[INFO] message-service                                                    [jar]
+[INFO] notification-service                                               [jar]
+[INFO] 
+[INFO] ------------------< com.auth.center:auth-center.all >-------------------
+[INFO] Building auth-center.all 1.0.0-SNAPSHOT                           [1/17]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ auth-center.all ---
+[INFO] 
+[INFO] --------------------< com.auth.center:common-core >---------------------
+[INFO] Building common-core 1.0.0-SNAPSHOT                               [2/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ common-core ---
+[INFO] Deleting F:\AIProjects\auth-center4\common\common-core\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ common-core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory F:\AIProjects\auth-center4\common\common-core\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ common-core ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 6 source files with javac [debug target 1.8] to target\classes
+[INFO] 
+[INFO] ------------------< com.auth.center:common-security >-------------------
+[INFO] Building common-security 1.0.0-SNAPSHOT                           [3/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ common-security ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ common-security ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory F:\AIProjects\auth-center4\common\common-security\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ common-security ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] ---------------------< com.auth.center:common-web >---------------------
+[INFO] Building common-web 1.0.0-SNAPSHOT                                [4/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ common-web ---
+[INFO] Deleting F:\AIProjects\auth-center4\common\common-web\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ common-web ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory F:\AIProjects\auth-center4\common\common-web\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ common-web ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 8 source files with javac [debug target 1.8] to target\classes
+[INFO] 
+[INFO] -----------------------< com.auth.center:common >-----------------------
+[INFO] Building common 1.0.0-SNAPSHOT                                    [5/17]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ common ---
+[INFO] 
+[INFO] ---------------< com.auth.center:common-infrastructure >----------------
+[INFO] Building common-infrastructure 1.0.0-SNAPSHOT                     [6/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ common-infrastructure ---
+[INFO] Deleting F:\AIProjects\auth-center4\common\common-infrastructure\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ common-infrastructure ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory F:\AIProjects\auth-center4\common\common-infrastructure\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ common-infrastructure ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] -------------------< com.auth.center:common-client >--------------------
+[INFO] Building common-client 1.0.0-SNAPSHOT                             [7/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ common-client ---
+[INFO] Deleting F:\AIProjects\auth-center4\common\common-client\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ common-client ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory F:\AIProjects\auth-center4\common\common-client\src\main\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ common-client ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 4 source files with javac [debug target 1.8] to target\classes
+[INFO] 
+[INFO] --------------------< com.auth.center:auth-gateway >--------------------
+[INFO] Building auth-gateway 1.0.0-SNAPSHOT                              [8/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ auth-gateway ---
+[INFO] Deleting F:\AIProjects\auth-center4\auth-gateway\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ auth-gateway ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ auth-gateway ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [debug target 8] to target\classes
+[INFO] 
+[INFO] --------------------< com.auth.center:auth-server >---------------------
+[INFO] Building auth-server 1.0.0-SNAPSHOT                               [9/17]
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The artifact mysql:mysql-connector-java:jar:8.0.33 has been relocated to com.mysql:mysql-connector-j:jar:8.0.33
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ auth-server ---
+[INFO] Deleting F:\AIProjects\auth-center4\auth-server\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ auth-server ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ auth-server ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 13 source files with javac [debug target 1.8] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/thirdparty/WeComThirdPartyProvider.java:[3,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/thirdparty/WeComThirdPartyProvider.java:[12,49] 找不到符号
+  符号: 类 ThirdPartyProvider
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[25,19] 找不到符号
+  符号:   类 LoginStrategyFactory
+  位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[26,19] 找不到符号
+  符号:   类 ThirdPartyAuthService
+  位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[210,54] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[22,1] 找不到符号
+  符号:   类 LoginStrategyFactory
+  位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[4,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[5,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[6,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[7,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[26,19] 找不到符号
+  符号:   类 ThirdPartyProviderRegistry
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[29,40] 找不到符号
+  符号:   类 ThirdPartyProviderRegistry
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[42,13] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[50,13] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[59,13] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[78,62] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[100,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[105,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[110,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[118,58] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[140,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[145,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[150,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[158,62] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[180,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[185,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[190,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[198,62] 找不到符号
+  符号:   类 ThirdPartyProvider
+  位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[220,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[225,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[230,51] 程序包com.auth.center.auth.domain.service不存在
+[INFO] 31 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for auth-center.all 1.0.0-SNAPSHOT:
+[INFO] 
+[INFO] auth-center.all .................................... SUCCESS [  0.103 s]
+[INFO] common-core ........................................ SUCCESS [  1.110 s]
+[INFO] common-security .................................... SUCCESS [  0.036 s]
+[INFO] common-web ......................................... SUCCESS [  1.107 s]
+[INFO] common ............................................. SUCCESS [  0.002 s]
+[INFO] common-infrastructure .............................. SUCCESS [  0.041 s]
+[INFO] common-client ...................................... SUCCESS [  0.707 s]
+[INFO] auth-gateway ....................................... SUCCESS [  0.832 s]
+[INFO] auth-server ........................................ FAILURE [  1.072 s]
+[INFO] user-service ....................................... SKIPPED
+[INFO] role-service ....................................... SKIPPED
+[INFO] client-service ..................................... SKIPPED
+[INFO] log-service ........................................ SKIPPED
+[INFO] monitor-service .................................... SKIPPED
+[INFO] file-service ....................................... SKIPPED
+[INFO] message-service .................................... SKIPPED
+[INFO] notification-service ............................... SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.432 s
+[INFO] Finished at: 2025-10-30T10:30:16+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project auth-server: Compilation failure: Compilation failure: 
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/thirdparty/WeComThirdPartyProvider.java:[3,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/thirdparty/WeComThirdPartyProvider.java:[12,49] 找不到符号
+[ERROR]   符号: 类 ThirdPartyProvider
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[25,19] 找不到符号
+[ERROR]   符号:   类 LoginStrategyFactory
+[ERROR]   位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[26,19] 找不到符号
+[ERROR]   符号:   类 ThirdPartyAuthService
+[ERROR]   位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[210,54] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/interfaces/controller/AuthController.java:[22,1] 找不到符号
+[ERROR]   符号:   类 LoginStrategyFactory
+[ERROR]   位置: 类 com.auth.center.auth.adapter.controller.AuthController
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[4,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[5,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[6,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[7,43] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[26,19] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProviderRegistry
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[29,40] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProviderRegistry
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[42,13] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[50,13] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[59,13] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[78,62] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[100,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[105,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[110,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[118,58] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[140,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[145,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[150,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[158,62] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[180,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[185,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[190,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[198,62] 找不到符号
+[ERROR]   符号:   类 ThirdPartyProvider
+[ERROR]   位置: 类 com.auth.center.auth.infrastructure.config.ThirdPartyAutoConfiguration
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[220,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[225,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] /F:/AIProjects/auth-center4/auth-server/src/main/java/com/auth/center/auth/infrastructure/config/ThirdPartyAutoConfiguration.java:[230,51] 程序包com.auth.center.auth.domain.service不存在
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :auth-server

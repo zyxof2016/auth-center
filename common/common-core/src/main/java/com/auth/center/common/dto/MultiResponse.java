@@ -1,6 +1,6 @@
 package com.auth.center.common.dto;
 
-import com.auth.center.common.exception.ErrorCode;
+import com.auth.center.common.exception.CommonErrorCode;
 import java.util.List;
 
 /**
@@ -40,8 +40,8 @@ public class MultiResponse<T> extends Response {
                 "data=" + data +
                 ", total=" + total +
                 ", success=" + isSuccess() +
-                ", errCode='" + getErrCode() + '\'' +
-                ", errMessage='" + getErrMessage() + '\'' +
+                ", errCode='" + getCode() + '\'' +
+                ", errMessage='" + getMessage() + '\'' +
                 ", timestamp=" + getTimestamp() +
                 '}';
     }
@@ -49,7 +49,7 @@ public class MultiResponse<T> extends Response {
     /**
      * 构建成功响应
      */
-    public static <T> MultiResponse<T> buildSuccess() {
+    public static <T> MultiResponse<T> buildMultiSuccess() {
         MultiResponse<T> response = new MultiResponse<>();
         response.setSuccess(true);
         return response;
@@ -58,19 +58,19 @@ public class MultiResponse<T> extends Response {
     /**
      * 构建失败响应
      */
-    public static <T> MultiResponse<T> buildFailure(String errCode, String errMessage) {
+    public static <T> MultiResponse<T> buildMultiFailure(String errCode, String errMessage) {
         MultiResponse<T> response = new MultiResponse<>();
         response.setSuccess(false);
-        response.setErrCode(errCode);
-        response.setErrMessage(errMessage);
+        response.setCode(errCode);
+        response.setMessage(errMessage);
         return response;
     }
 
     /**
      * 构建失败响应（使用错误码枚举）
      */
-    public static <T> MultiResponse<T> buildFailure(ErrorCode errorCode) {
-        return buildFailure(errorCode.getCode(), errorCode.getMessage());
+    public static <T> MultiResponse<T> buildMultiFailure(CommonErrorCode errorCode) {
+        return buildMultiFailure(errorCode.getCode(), errorCode.getMessage());
     }
 
     /**

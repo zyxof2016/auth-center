@@ -1,119 +1,1 @@
-package com.auth.center.common.web;
-
-import com.auth.center.common.dto.Response;
-import com.auth.center.common.exception.BusinessException;
-import com.auth.center.common.exception.ErrorCode;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.util.stream.Collectors;
-
-/**
- * 全局异常处理器
- * 
- * @author auth-center
- */
-@Slf4j
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    /**
-     * 处理业务异常
-     */
-    @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.OK)
-    public Response handleBusinessException(BusinessException e, HttpServletRequest request) {
-        log.warn("业务异常: {} - {}", e.getErrCode(), e.getErrMessage());
-        log.debug("业务异常详情: ", e);
-        return Response.buildFailure(e.getErrCode(), e.getErrMessage());
-    }
-
-    /**
-     * 处理参数校验异常（@Validated）
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-        log.warn("参数校验异常: {}", errorMessage);
-        return Response.buildFailure(ErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);
-    }
-
-    /**
-     * 处理参数绑定异常（@Valid）
-     */
-    @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleBindException(BindException e) {
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-        log.warn("参数绑定异常: {}", errorMessage);
-        return Response.buildFailure(ErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);
-    }
-
-    /**
-     * 处理参数校验异常（@Validated on method）
-     */
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response handleConstraintViolationException(ConstraintViolationException e) {
-        String errorMessage = e.getConstraintViolations().stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining(", "));
-        log.warn("参数校验异常: {}", errorMessage);
-        return Response.buildFailure(ErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);
-    }
-
-    /**
-     * 处理404异常
-     */
-    @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Response handleNoHandlerFoundException(NoHandlerFoundException e) {
-        log.warn("接口不存在: {} {}", e.getHttpMethod(), e.getRequestURL());
-        return Response.buildFailure(ErrorCode.RESOURCE_NOT_FOUND.getCode(), 
-                "接口不存在: " + e.getHttpMethod() + " " + e.getRequestURL());
-    }
-
-    /**
-     * 处理空指针异常
-     */
-    @ExceptionHandler(NullPointerException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Response handleNullPointerException(NullPointerException e) {
-        log.error("空指针异常: ", e);
-        return Response.buildFailure(ErrorCode.SYSTEM_ERROR);
-    }
-
-    /**
-     * 处理其他所有异常
-     */
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Response handleException(Exception e, HttpServletRequest request) {
-        log.error("系统异常: {} {}", request.getMethod(), request.getRequestURI(), e);
-        return Response.buildFailure(ErrorCode.SYSTEM_ERROR);
-    }
-
-    /**
-     * 记录异常信息
-     */
-    private void logException(HttpServletRequest request, Exception e) {
-        String queryString = request.getQueryString();
-        String path = request.getRequestURI() + (queryString != null ? "?" + queryString : "");
-        log.error("请求异常: {} {}", request.getMethod(), path, e);
-    }
-}
+package com.auth.center.common.web;import com.auth.center.common.dto.Response;import com.auth.center.common.exception.BusinessException;import com.auth.center.common.exception.CommonErrorCode;import com.auth.center.common.web.exception.AuthException;import lombok.extern.slf4j.Slf4j;import org.springframework.http.HttpStatus;import org.springframework.validation.BindException;import org.springframework.validation.FieldError;import org.springframework.web.bind.MethodArgumentNotValidException;import org.springframework.web.bind.annotation.ExceptionHandler;import org.springframework.web.bind.annotation.ResponseStatus;import org.springframework.web.bind.annotation.RestControllerAdvice;import org.springframework.web.servlet.NoHandlerFoundException;import javax.servlet.http.HttpServletRequest;import javax.validation.ConstraintViolation;import javax.validation.ConstraintViolationException;import java.util.stream.Collectors;/** * 全局异常处理器 *  * @author auth-center */@Slf4j@RestControllerAdvicepublic class GlobalExceptionHandler {    /**     * 处理认证异常     */    @ExceptionHandler(AuthException.class)    @ResponseStatus(HttpStatus.UNAUTHORIZED)    public Response handleAuthException(AuthException e) {        log.warn("认证异常: {} - {}", e.getErrorCode(), e.getErrorMessage());        return Response.buildFailure(e.getErrorCode(), e.getErrorMessage());    }    /**     * 处理参数验证异常     */    @ExceptionHandler(IllegalArgumentException.class)    @ResponseStatus(HttpStatus.BAD_REQUEST)    public Response handleIllegalArgumentException(IllegalArgumentException e) {        log.warn("参数验证异常: {}", e.getMessage());        return Response.buildFailure(CommonErrorCode.PARAM_FORMAT_ERROR.getCode(), e.getMessage());    }    /**     * 处理业务异常     */    @ExceptionHandler(BusinessException.class)    @ResponseStatus(HttpStatus.OK)    public Response handleBusinessException(BusinessException e, HttpServletRequest request) {        log.warn("业务异常: {} - {}", e.getErrCode(), e.getErrMessage());        log.debug("业务异常详情: ", e);        return Response.buildFailure(e.getErrCode(), e.getErrMessage());    }    /**     * 处理参数校验异常（@Validated）     */    @ExceptionHandler(MethodArgumentNotValidException.class)    @ResponseStatus(HttpStatus.BAD_REQUEST)    public Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {        String errorMessage = e.getBindingResult().getFieldErrors().stream()                .map(FieldError::getDefaultMessage)                .collect(Collectors.joining(", "));        log.warn("参数校验异常: {}", errorMessage);        return Response.buildFailure(CommonErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);    }    /**     * 处理参数绑定异常（@Valid）     */    @ExceptionHandler(BindException.class)    @ResponseStatus(HttpStatus.BAD_REQUEST)    public Response handleBindException(BindException e) {        String errorMessage = e.getBindingResult().getFieldErrors().stream()                .map(FieldError::getDefaultMessage)                .collect(Collectors.joining(", "));        log.warn("参数绑定异常: {}", errorMessage);        return Response.buildFailure(CommonErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);    }    /**     * 处理参数校验异常（@Validated on method）     */    @ExceptionHandler(ConstraintViolationException.class)    @ResponseStatus(HttpStatus.BAD_REQUEST)    public Response handleConstraintViolationException(ConstraintViolationException e) {        String errorMessage = e.getConstraintViolations().stream()                .map(ConstraintViolation::getMessage)                .collect(Collectors.joining(", "));        log.warn("参数校验异常: {}", errorMessage);        return Response.buildFailure(CommonErrorCode.PARAM_FORMAT_ERROR.getCode(), errorMessage);    }    /**     * 处理404异常     */    @ExceptionHandler(NoHandlerFoundException.class)    @ResponseStatus(HttpStatus.NOT_FOUND)    public Response handleNoHandlerFoundException(NoHandlerFoundException e) {        log.warn("接口不存在: {} {}", e.getHttpMethod(), e.getRequestURL());        return Response.buildFailure(CommonErrorCode.RESOURCE_NOT_FOUND.getCode(),                "接口不存在: " + e.getHttpMethod() + " " + e.getRequestURL());    }    /**     * 处理空指针异常     */    @ExceptionHandler(NullPointerException.class)    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)    public Response handleNullPointerException(NullPointerException e) {        log.error("空指针异常: ", e);        return Response.buildFailure(CommonErrorCode.SYSTEM_ERROR);    }    /**     * 处理其他所有异常     */    @ExceptionHandler(Exception.class)    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)    public Response handleException(Exception e, HttpServletRequest request) {        log.error("系统异常: {} {}", request.getMethod(), request.getRequestURI(), e);        return Response.buildFailure(CommonErrorCode.SYSTEM_ERROR);    }    /**     * 记录异常信息     */    private void logException(HttpServletRequest request, Exception e) {        String queryString = request.getQueryString();        String path = request.getRequestURI() + (queryString != null ? "?" + queryString : "");        log.error("请求异常: {} {}", request.getMethod(), path, e);    }}

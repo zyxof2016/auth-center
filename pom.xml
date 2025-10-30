@@ -39,9 +39,8 @@
 
     <modules>
         <!-- 公共模块 -->
-        <module>common/common-core</module>
-        <module>common/common-security</module>
-        <module>common/common-web</module>
+        <module>common</module>
+        <module>common/common-client</module>
         
         <!-- 微服务模块 -->
         <module>auth-gateway</module>
@@ -51,6 +50,9 @@
         <module>client-service</module>
         <module>log-service</module>
         <module>monitor-service</module>
+        <module>file-service</module>
+        <module>message-service</module>
+        <module>notification-service</module>
         
         <!-- 启动模块 -->
         <!-- <module>start</module> -->

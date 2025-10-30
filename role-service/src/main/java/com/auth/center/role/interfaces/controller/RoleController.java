@@ -90,11 +90,11 @@ public class RoleController {
         return roleApplicationService.getRoleByRoleCode(tenantId, roleCode);
     }
     
-    /**
-     * 获取用户拥有的角色列表
-     */
-    @GetMapping("/user/{userId}")
-    public List<RoleDTO> getUserRoles(@RequestParam Long tenantId, @PathVariable Long userId) {
-        return roleApplicationService.getUserRoles(tenantId, userId);
+    /**
+     * 获取用户拥有的角色列表
+     */
+    @GetMapping("/user/{userId}")
+    public SingleResponse<List<RoleDTO>> getUserRoles(@RequestParam Long tenantId, @PathVariable Long userId) {
+        return roleApplicationService.getUserRoles(tenantId, userId);
     }
 }

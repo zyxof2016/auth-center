@@ -1,36 +1,64 @@
 package com.auth.center.auth.domain.service;
 
-import java.util.Map;
-
 /**
  * 第三方用户信息
  */
 public class ThirdPartyUserInfo {
-    private String openId;
-    private String unionId;
+    
+    /**
+     * 用户ID
+     */
+    private String userId;
+    
+    /**
+     * 用户名
+     */
+    private String username;
+    
+    /**
+     * 昵称
+     */
     private String nickname;
+    
+    /**
+     * 头像URL
+     */
     private String avatar;
+    
+    /**
+     * 邮箱
+     */
     private String email;
+    
+    /**
+     * 手机号
+     */
     private String phone;
-    private Integer gender;
-    private String location;
-    private Map<String, Object> rawData;
     
-    // getter/setter
-    public String getOpenId() {
-        return openId;
+    /**
+     * 性别
+     */
+    private String gender;
+    
+    /**
+     * 原始用户信息
+     */
+    private Object rawUserInfo;
+    
+    public String getUserId() {
+        return userId;
     }
     
-    public void setOpenId(String openId) {
-        this.openId = openId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
     
-    public String getUnionId() {
-        return unionId;
+    public String getUsername() {
+        return username;
     }
     
-    public void setUnionId(String unionId) {
-        this.unionId = unionId;
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     public String getNickname() {
@@ -65,27 +93,19 @@ public class ThirdPartyUserInfo {
         this.phone = phone;
     }
     
-    public Integer getGender() {
+    public String getGender() {
         return gender;
     }
     
-    public void setGender(Integer gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
     
-    public String getLocation() {
-        return location;
+    public Object getRawUserInfo() {
+        return rawUserInfo;
     }
     
-    public void setLocation(String location) {
-        this.location = location;
-    }
-    
-    public Map<String, Object> getRawData() {
-        return rawData;
-    }
-    
-    public void setRawData(Map<String, Object> rawData) {
-        this.rawData = rawData;
+    public void setRawUserInfo(Object rawUserInfo) {
+        this.rawUserInfo = rawUserInfo;
     }
 }

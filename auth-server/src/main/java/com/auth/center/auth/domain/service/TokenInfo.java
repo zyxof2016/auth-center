@@ -4,12 +4,32 @@ package com.auth.center.auth.domain.service;
  * 令牌信息
  */
 public class TokenInfo {
+    
+    /**
+     * 访问令牌
+     */
     private String accessToken;
+    
+    /**
+     * 刷新令牌
+     */
     private String refreshToken;
-    private Long expiresIn;
+    
+    /**
+     * 令牌类型
+     */
+    private String tokenType = "Bearer";
+    
+    /**
+     * 过期时间（秒）
+     */
+    private Integer expiresIn;
+    
+    /**
+     * 令牌范围
+     */
     private String scope;
     
-    // getter/setter
     public String getAccessToken() {
         return accessToken;
     }
@@ -26,11 +46,19 @@ public class TokenInfo {
         this.refreshToken = refreshToken;
     }
     
-    public Long getExpiresIn() {
+    public String getTokenType() {
+        return tokenType;
+    }
+    
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+    
+    public Integer getExpiresIn() {
         return expiresIn;
     }
     
-    public void setExpiresIn(Long expiresIn) {
+    public void setExpiresIn(Integer expiresIn) {
         this.expiresIn = expiresIn;
     }
     

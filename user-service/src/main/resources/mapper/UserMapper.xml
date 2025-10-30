@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.auth.center.user.infrastructure.persistence.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.auth.center.user.infrastructure.persistence.po.UserPO">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="realName" column="real_name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="status" column="status"/>
+        <result property="userType" column="user_type"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="lastLoginIp" column="last_login_ip"/>
+        <result property="loginFailCount" column="login_fail_count"/>
+        <result property="pwdUpdateTime" column="pwd_update_time"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+    <sql id="userColumns">
+        id, tenant_id, username, password, email, phone, real_name, nickname,
+        avatar, gender, birthday, status, user_type, last_login_time, last_login_ip,
+        login_fail_count, pwd_update_time, created_by, created_time, updated_by, updated_time
+    </sql>
+
+    <!-- 插入用户 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user (
+            tenant_id, username, password, email, phone, real_name, nickname,
+            avatar, gender, birthday, status, user_type, last_login_time, last_login_ip,
+            login_fail_count, pwd_update_time, created_by, created_time, updated_by, updated_time
+        ) VALUES (
+            #{tenantId}, #{username}, #{password}, #{email}, #{phone}, #{realName}, #{nickname},
+            #{avatar}, #{gender}, #{birthday}, #{status}, #{userType}, #{lastLoginTime}, #{lastLoginIp},
+            #{loginFailCount}, #{pwdUpdateTime}, #{createdBy}, #{createdTime}, #{updatedBy}, #{updatedTime}
+        )
+    </insert>
+
+    <!-- 根据ID查询用户 -->
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM sys_user
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="selectByUsername" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM sys_user
+        WHERE tenant_id = #{tenantId} AND username = #{username}
+    </select>
+
+    <!-- 根据用户名统计数量 -->
+    <select id="countByUsername" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_user
+        WHERE tenant_id = #{tenantId} AND username = #{username}
+    </select>
+
+    <!-- 根据邮箱统计数量 -->
+    <select id="countByEmail" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_user
+        WHERE tenant_id = #{tenantId} AND email = #{email}
+    </select>
+
+    <!-- 根据手机号统计数量 -->
+    <select id="countByPhone" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_user
+        WHERE tenant_id = #{tenantId} AND phone = #{phone}
+    </select>
+
+    <!-- 根据条件统计用户数量 -->
+    <select id="countByConditions" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_user
+        WHERE tenant_id = #{tenantId}
+        <if test="username != null and username != ''">
+            AND username LIKE CONCAT('%', #{username}, '%')
+        </if>
+        <if test="realName != null and realName != ''">
+            AND real_name LIKE CONCAT('%', #{realName}, '%')
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <!-- 根据条件查询用户列表 -->
+    <select id="selectByConditions" resultMap="UserResultMap">
+        SELECT <include refid="userColumns"/>
+        FROM sys_user
+        WHERE tenant_id = #{tenantId}
+        <if test="username != null and username != ''">
+            AND username LIKE CONCAT('%', #{username}, '%')
+        </if>
+        <if test="realName != null and realName != ''">
+            AND real_name LIKE CONCAT('%', #{realName}, '%')
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY created_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 根据ID删除用户 -->
+    <delete id="deleteById">
+        DELETE FROM sys_user WHERE id = #{id}
+    </delete>
+
+    <!-- 根据ID更新用户 -->
+    <update id="updateById">
+        UPDATE sys_user
+        <set>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="realName != null and realName != ''">real_name = #{realName},</if>
+            <if test="nickname != null and nickname != ''">nickname = #{nickname},</if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="userType != null">user_type = #{userType},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="lastLoginIp != null and lastLoginIp != ''">last_login_ip = #{lastLoginIp},</if>
+            <if test="loginFailCount != null">login_fail_count = #{loginFailCount},</if>
+            <if test="pwdUpdateTime != null">pwd_update_time = #{pwdUpdateTime},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="updatedTime != null">updated_time = #{updatedTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

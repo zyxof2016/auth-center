@@ -1,15 +1,15 @@
 package com.auth.center.user.application.service;
 
-import com.auth.center.user.application.dto.UserDTO;
-import com.auth.center.user.domain.entity.UserEntity;
-import com.auth.center.user.domain.enums.UserStatus;
-import com.auth.center.user.domain.enums.UserType;
-import com.auth.center.user.domain.repository.UserRepository;
 import com.auth.center.common.dto.PageResponse;
 import com.auth.center.common.dto.Response;
 import com.auth.center.common.dto.SingleResponse;
 import com.auth.center.common.exception.BusinessException;
-import com.auth.center.common.exception.ErrorCode;
+import com.auth.center.common.exception.CommonErrorCode;
+import com.auth.center.user.application.dto.UserDTO;
+import com.auth.center.user.domain.entity.User;
+import com.auth.center.user.domain.enums.UserStatus;
+import com.auth.center.user.domain.repository.UserRepository;
+import com.auth.center.user.domain.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +21,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 用户应用服务
+ * 用户应用服务（符合COLA架构规范）
  */
 @Service
 @RequiredArgsConstructor
 public class UserApplicationService {
     
+    private final UserDomainService userDomainService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     
@@ -34,62 +35,52 @@ public class UserApplicationService {
      * 创建用户
      */
     public SingleResponse<UserDTO> createUser(UserDTO userDTO) {
-        // 检查用户名是否已存在
-        if (userRepository.existsByUsername(userDTO.getTenantId(), userDTO.getUsername())) {
-            throw new BusinessException(ErrorCode.USERNAME_EXISTS);
+        try {
+            // 将DTO转换为领域实体
+            User user = convertToDomain(userDTO);
+            
+            // 通过领域服务创建用户
+            User createdUser = userDomainService.createUser(user);
+            
+            // 将领域实体转换为DTO返回
+            return SingleResponse.of(convertToDTO(createdUser));
+        } catch (IllegalStateException e) {
+            throw new BusinessException(CommonErrorCode.USER_INPUT_ERROR, e.getMessage());
         }
-        
-        // 检查邮箱是否已存在
-        if (userDTO.getEmail() != null && userRepository.existsByEmail(userDTO.getTenantId(), userDTO.getEmail())) {
-            throw new BusinessException(ErrorCode.EMAIL_EXISTS);
-        }
-        
-        // 检查手机号是否已存在
-        if (userDTO.getPhone() != null && userRepository.existsByPhone(userDTO.getTenantId(), userDTO.getPhone())) {
-            throw new BusinessException(ErrorCode.PHONE_EXISTS);
-        }
-        
-        UserEntity userEntity = convertToEntity(userDTO);
-        userEntity.setStatus(UserStatus.ENABLED);
-        userEntity.setUserType(UserType.NORMAL);
-        userEntity.setCreatedTime(LocalDateTime.now());
-        
-        // 加密密码
-        if (userEntity.getPassword() != null) {
-            userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        }
-        
-        UserEntity savedEntity = userRepository.save(userEntity);
-        return SingleResponse.of(convertToDTO(savedEntity));
     }
     
     /**
      * 更新用户
      */
     public SingleResponse<UserDTO> updateUser(Long id, UserDTO userDTO) {
-        UserEntity existingEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        // 从领域服务获取用户
+        User existingUser = userDomainService.getUserById(id);
+        if (existingUser == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
         
-        // 更新字段
-        existingEntity.setRealName(userDTO.getRealName());
-        existingEntity.setNickname(userDTO.getNickname());
-        existingEntity.setAvatar(userDTO.getAvatar());
-        existingEntity.setGender(userDTO.getGender());
-        existingEntity.setBirthday(userDTO.getBirthday());
-        existingEntity.setDescription(userDTO.getDescription());
-        existingEntity.setUpdatedTime(LocalDateTime.now());
+        // 更新用户信息
+        existingUser.updateInfo(userDTO.getEmail(), userDTO.getPhone(), userDTO.getRealName());
+        existingUser.setNickname(userDTO.getNickname());
+        existingUser.setAvatar(userDTO.getAvatar());
+        existingUser.setGender(userDTO.getGender());
+        existingUser.setBirthday(userDTO.getBirthday());
+        existingUser.setUpdatedTime(LocalDateTime.now());
         
-        UserEntity updatedEntity = userRepository.save(existingEntity);
-        return SingleResponse.of(convertToDTO(updatedEntity));
+        // 通过领域服务更新用户
+        User updatedUser = userDomainService.updateUserInfo(existingUser);
+        return SingleResponse.of(convertToDTO(updatedUser));
     }
     
     /**
      * 获取用户详情
      */
     public SingleResponse<UserDTO> getUserById(Long id) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        return SingleResponse.of(convertToDTO(userEntity));
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
+        return SingleResponse.of(convertToDTO(user));
     }
     
     /**
@@ -97,26 +88,33 @@ public class UserApplicationService {
      */
     public PageResponse<UserDTO> getUserPage(Long tenantId, String username, String realName, 
                                            UserStatus status, int page, int size) {
+        // 创建分页请求
         PageRequest pageRequest = PageRequest.of(page - 1, size);
-        Page<UserEntity> userPage = userRepository.findByConditions(tenantId, username, realName, status, pageRequest);
         
-        List<UserDTO> userDTOs = userPage.getContent().stream()
+        // 通过领域服务获取分页数据
+        Page<User> userPage = userDomainService.getUserPage(tenantId, username, realName, status, pageRequest);
+        
+        // 转换为DTO列表
+        List<UserDTO> userDTOList = userPage.getContent().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         
-        return PageResponse.of(userDTOs, userPage.getTotalElements(), page, size);
+        // 构建分页响应
+        return PageResponse.of(userDTOList, userPage.getNumber() + 1, userPage.getSize(), 
+                              userPage.getTotalElements());
     }
     
     /**
      * 启用用户
      */
     public Response enableUser(Long id) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
         
-        userEntity.setStatus(UserStatus.ENABLED);
-        userEntity.setUpdatedTime(LocalDateTime.now());
-        userRepository.save(userEntity);
+        user.unlock(); // 解锁用户
+        userDomainService.updateUserInfo(user);
         
         return Response.buildSuccess();
     }
@@ -125,12 +123,13 @@ public class UserApplicationService {
      * 禁用用户
      */
     public Response disableUser(Long id) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
         
-        userEntity.setStatus(UserStatus.DISABLED);
-        userEntity.setUpdatedTime(LocalDateTime.now());
-        userRepository.save(userEntity);
+        user.lock(); // 锁定用户
+        userDomainService.updateUserInfo(user);
         
         return Response.buildSuccess();
     }
@@ -139,13 +138,20 @@ public class UserApplicationService {
      * 重置用户密码
      */
     public Response resetPassword(Long id, String newPassword) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
         
-        userEntity.setPassword(passwordEncoder.encode(newPassword));
-        userEntity.setPwdUpdateTime(LocalDateTime.now());
-        userEntity.setUpdatedTime(LocalDateTime.now());
-        userRepository.save(userEntity);
+        // 验证密码强度
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new BusinessException(CommonErrorCode.PARAM_FORMAT_ERROR, "密码长度不能少于6位");
+        }
+        
+        // 加密新密码
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.updatePassword(encodedPassword);
+        userDomainService.updateUserInfo(user);
         
         return Response.buildSuccess();
     }
@@ -154,22 +160,24 @@ public class UserApplicationService {
      * 根据用户名查询用户
      */
     public SingleResponse<UserDTO> getUserByUsername(Long tenantId, String username) {
-        UserEntity userEntity = userRepository.findByUsername(tenantId, username)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        return SingleResponse.of(convertToDTO(userEntity));
+        User user = userRepository.findByUsername(tenantId, username);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
+        return SingleResponse.of(convertToDTO(user));
     }
     
     /**
      * 更新用户登录信息
      */
     public Response updateLoginInfo(Long id, String loginIp) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
         
-        userEntity.setLastLoginTime(LocalDateTime.now());
-        userEntity.setLastLoginIp(loginIp);
-        userEntity.setLoginFailCount(0); // 重置登录失败次数
-        userRepository.save(userEntity);
+        user.recordLogin(loginIp);
+        userDomainService.updateUserInfo(user);
         
         return Response.buildSuccess();
     }
@@ -178,34 +186,48 @@ public class UserApplicationService {
      * 增加登录失败次数
      */
     public Response increaseLoginFailCount(Long id) {
-        UserEntity userEntity = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
         
-        userEntity.setLoginFailCount(userEntity.getLoginFailCount() + 1);
-        userRepository.save(userEntity);
+        user.incrementLoginFailCount();
+        userDomainService.updateUserInfo(user);
         
         return Response.buildSuccess();
     }
     
-    private UserEntity convertToEntity(UserDTO dto) {
-        UserEntity entity = new UserEntity();
-        entity.setId(dto.getId());
-        entity.setTenantId(dto.getTenantId());
-        entity.setUsername(dto.getUsername());
-        entity.setPassword(dto.getPassword());
-        entity.setEmail(dto.getEmail());
-        entity.setPhone(dto.getPhone());
-        entity.setRealName(dto.getRealName());
-        entity.setNickname(dto.getNickname());
-        entity.setAvatar(dto.getAvatar());
-        entity.setGender(dto.getGender());
-        entity.setBirthday(dto.getBirthday());
-        entity.setStatus(dto.getStatus());
-        entity.setUserType(dto.getUserType());
-        return entity;
+    /**
+     * 将DTO转换为领域实体
+     *
+     * @param dto 用户DTO
+     * @return 领域实体
+     */
+    private User convertToDomain(UserDTO dto) {
+        User user = new User();
+        user.setId(dto.getId());
+        user.setTenantId(dto.getTenantId());
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+        user.setRealName(dto.getRealName());
+        user.setNickname(dto.getNickname());
+        user.setAvatar(dto.getAvatar());
+        user.setGender(dto.getGender());
+        user.setBirthday(dto.getBirthday());
+        user.setStatus(dto.getStatus());
+        user.setUserType(dto.getUserType());
+        return user;
     }
     
-    private UserDTO convertToDTO(UserEntity entity) {
+    /**
+     * 将领域实体转换为DTO
+     *
+     * @param entity 领域实体
+     * @return 用户DTO
+     */
+    private UserDTO convertToDTO(User entity) {
         UserDTO dto = new UserDTO();
         dto.setId(entity.getId());
         dto.setTenantId(entity.getTenantId());

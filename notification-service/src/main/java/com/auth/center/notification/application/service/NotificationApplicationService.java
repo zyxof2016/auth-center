@@ -3,6 +3,9 @@ package com.auth.center.notification.application.service;
 import com.auth.center.notification.domain.entity.NotificationEntity;
 import com.auth.center.notification.domain.enums.NotificationType;
 import com.auth.center.notification.domain.repository.NotificationRepository;
+import com.auth.center.notification.infrastructure.service.NotificationServiceFactory;
+import com.auth.center.notification.infrastructure.service.NotificationSendService;
+import com.auth.center.notification.infrastructure.service.WebSocketNotificationService;
 import com.auth.center.common.dto.PageResponse;
 import com.auth.center.common.dto.Response;
 import com.auth.center.common.dto.SingleResponse;
@@ -13,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 通知应用服务
@@ -23,18 +25,55 @@ import java.util.stream.Collectors;
 public class NotificationApplicationService {
     
     private final NotificationRepository notificationRepository;
+    private final NotificationServiceFactory notificationServiceFactory;
+    private final WebSocketNotificationService webSocketNotificationService;
     
     /**
      * 发送通知
      */
     public SingleResponse<NotificationEntity> sendNotification(NotificationEntity notification) {
-        notification.setStatus("SENDING");
-        notification.setSendTime(LocalDateTime.now());
         notification.setCreatedTime(LocalDateTime.now());
         notification.setUpdatedTime(LocalDateTime.now());
         
+        // 保存通知到数据库
         NotificationEntity savedNotification = notificationRepository.save(notification);
+        
+        // 异步发送通知
+        sendNotificationAsync(savedNotification);
+        
         return SingleResponse.of(savedNotification);
+    }
+    
+    /**
+     * 异步发送通知
+     */
+    private void sendNotificationAsync(NotificationEntity notification) {
+        new Thread(() -> {
+            try {
+                // 获取对应的通知发送服务
+                NotificationSendService sendService = notificationServiceFactory.getNotificationService(notification.getChannel());
+                
+                // 发送通知
+                boolean success = sendService.sendNotification(notification);
+                
+                // 更新通知状态
+                if (success) {
+                    notification.setSendSuccess();
+                } else {
+                    notification.setSendFailed("发送失败");
+                }
+                
+                notificationRepository.save(notification);
+                
+                // 发送实时通知（WebSocket）
+                if (success) {
+                    webSocketNotificationService.sendRealTimeNotification(notification);
+                }
+            } catch (Exception e) {
+                notification.setSendFailed("发送异常: " + e.getMessage());
+                notificationRepository.save(notification);
+            }
+        }).start();
     }
     
     /**
@@ -63,7 +102,7 @@ public class NotificationApplicationService {
         Page<NotificationEntity> notificationPage = notificationRepository.findByConditions(
                 notificationType, receiver, status, startTime, endTime, pageRequest);
         
-        return PageResponse.of(notificationPage.getContent(), notificationPage.getTotalElements(), page, size);
+        return PageResponse.of(notificationPage.getContent(), page, size, notificationPage.getTotalElements());
     }
     
     /**
@@ -80,10 +119,23 @@ public class NotificationApplicationService {
         List<NotificationEntity> failedNotifications = notificationRepository.findFailedNotifications();
         
         for (NotificationEntity notification : failedNotifications) {
-            if (notification.getRetryCount() < notification.getMaxRetryCount()) {
-                notification.setStatus("RETRYING");
-                notification.setRetryCount(notification.getRetryCount() + 1);
-                notification.setUpdatedTime(LocalDateTime.now());
+            if (notification.canRetry()) {
+                // 获取对应的通知发送服务
+                NotificationSendService sendService = notificationServiceFactory.getNotificationService(notification.getChannel());
+                
+                // 重试发送通知
+                boolean success = sendService.retrySendNotification(notification);
+                
+                // 更新通知状态
+                if (success) {
+                    notification.setSendSuccess();
+                } else {
+                    notification.incrementRetryCount();
+                    if (!notification.canRetry()) {
+                        notification.setSendFailed("达到最大重试次数");
+                    }
+                }
+                
                 notificationRepository.save(notification);
             }
         }
@@ -98,10 +150,18 @@ public class NotificationApplicationService {
         NotificationEntity notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("通知不存在"));
         
-        notification.setStatus("READ");
+        notification.markAsRead();
         notification.setUpdatedTime(LocalDateTime.now());
         notificationRepository.save(notification);
         
         return Response.buildSuccess();
+    }
+    
+    /**
+     * 获取未读通知数量
+     */
+    public SingleResponse<Long> getUnreadNotificationCount(String receiver) {
+        Long count = notificationRepository.countUnreadNotifications(receiver);
+        return SingleResponse.of(count);
     }
 }
