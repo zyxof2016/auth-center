@@ -7,37 +7,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 企业微信第三方登录提供者
+ * 微信登录提供者
  */
 @Component
-public class WeComThirdPartyProvider implements ThirdPartyProvider {
+public class WechatProvider implements ThirdPartyProvider {
     
     private final ThirdPartyConfig thirdPartyConfig;
     
     @Autowired
-    public WeComThirdPartyProvider(ThirdPartyConfig thirdPartyConfig) {
+    public WechatProvider(ThirdPartyConfig thirdPartyConfig) {
         this.thirdPartyConfig = thirdPartyConfig;
     }
     
     @Override
     public String getProviderType() {
-        return "WECOM";
+        return "WECHAT";
     }
     
     @Override
     public String getProviderName() {
-        ThirdPartyConfig.ProviderConfig config = thirdPartyConfig.getProviders().get("wecom");
-        return config != null ? config.getName() : "企业微信登录";
+        ThirdPartyConfig.ProviderConfig config = thirdPartyConfig.getProviders().get("wechat");
+        return config != null ? config.getName() : "微信登录";
     }
     
     @Override
     public boolean isEnabled() {
-        ThirdPartyConfig.ProviderConfig config = thirdPartyConfig.getProviders().get("wecom");
+        ThirdPartyConfig.ProviderConfig config = thirdPartyConfig.getProviders().get("wechat");
         return config != null && config.isEnabled();
     }
     
     private ThirdPartyConfig.ProviderConfig getConfig() {
-        return thirdPartyConfig.getProviders().get("wecom");
+        return thirdPartyConfig.getProviders().get("wechat");
     }
     
     @Override
@@ -52,38 +52,44 @@ public class WeComThirdPartyProvider implements ThirdPartyProvider {
     public String getAuthorizeUrl(String redirectUri, String state) {
         ThirdPartyConfig.ProviderConfig config = getConfig();
         if (config == null) {
-            throw new IllegalStateException("企业微信登录配置不存在");
+            throw new IllegalStateException("微信登录配置不存在");
         }
         
         String authorizeUrl = config.getAuthorizeUrl() != null && !config.getAuthorizeUrl().isEmpty() ? 
-                              config.getAuthorizeUrl() : "https://open.work.weixin.qq.com/wwopen/sso/3rd_qrConnect";
+                              config.getAuthorizeUrl() : "https://open.weixin.qq.com/connect/qrconnect";
         
-        StringBuilder url = new StringBuilder();
-        url.append(authorizeUrl);
-        url.append("?appid=").append(config.getAppId());
-        url.append("&redirect_uri=").append(redirectUri);
-        url.append("&state=").append(state);
-        url.append("&usertype=member");
+        String scope = config.getScope() != null && !config.getScope().isEmpty() ? 
+                       config.getScope() : "snsapi_login";
         
-        return url.toString();
+        return authorizeUrl + 
+               "?appid=" + config.getAppId() + 
+               "&redirect_uri=" + redirectUri + 
+               "&response_type=code" + 
+               "&scope=" + scope + 
+               "&state=" + state + 
+               "#wechat_redirect";
     }
     
     @Override
     public String getAuthorizeUrl(String redirectUri, String state, java.util.Map<String, String> additionalParams) {
         ThirdPartyConfig.ProviderConfig config = getConfig();
         if (config == null) {
-            throw new IllegalStateException("企业微信登录配置不存在");
+            throw new IllegalStateException("微信登录配置不存在");
         }
         
         String authorizeUrl = config.getAuthorizeUrl() != null && !config.getAuthorizeUrl().isEmpty() ? 
-                              config.getAuthorizeUrl() : "https://open.work.weixin.qq.com/wwopen/sso/3rd_qrConnect";
+                              config.getAuthorizeUrl() : "https://open.weixin.qq.com/connect/qrconnect";
+        
+        String scope = config.getScope() != null && !config.getScope().isEmpty() ? 
+                       config.getScope() : "snsapi_login";
         
         StringBuilder url = new StringBuilder();
         url.append(authorizeUrl);
         url.append("?appid=").append(config.getAppId());
         url.append("&redirect_uri=").append(redirectUri);
+        url.append("&response_type=code");
+        url.append("&scope=").append(scope);
         url.append("&state=").append(state);
-        url.append("&usertype=member");
         
         // 添加额外参数
         if (additionalParams != null && !additionalParams.isEmpty()) {
@@ -92,6 +98,8 @@ public class WeComThirdPartyProvider implements ThirdPartyProvider {
             }
         }
         
+        url.append("#wechat_redirect");
+        
         return url.toString();
     }
     
@@ -99,42 +107,35 @@ public class WeComThirdPartyProvider implements ThirdPartyProvider {
     public ThirdPartyUser handleCallback(String code, String state) {
         ThirdPartyConfig.ProviderConfig config = getConfig();
         if (config == null) {
-            throw new IllegalStateException("企业微信登录配置不存在");
+            throw new IllegalStateException("微信登录配置不存在");
         }
         
-        // 在实际项目中，这里需要调用企业微信API获取访问令牌和用户信息
-        // 这里只是一个示例实现
+        // 这里应该实现实际的微信回调处理逻辑
+        // 1. 通过code获取access_token
+        // 2. 通过access_token获取用户信息
+        // 3. 将用户信息转换为ThirdPartyUser对象
         
-        // 1. 通过code获取访问令牌
-        // TokenInfo tokenInfo = getAccessToken(code);
-        
-        // 2. 通过访问令牌获取用户信息
-        // ThirdPartyUser userInfo = getUserInfo(tokenInfo.getAccessToken());
-        
-        // 示例实现
-        ThirdPartyUser userInfo = new ThirdPartyUser();
-        userInfo.setThirdId("wecom_user_123");
-        userInfo.setThirdNickname("企业微信用户");
-        userInfo.setThirdAvatar("https://example.com/avatar.png");
-        userInfo.setAccessToken("access_token");
-        userInfo.setRefreshToken("refresh_token");
-        userInfo.setExpireTime(System.currentTimeMillis() + 7200000L); // 2小时后过期
-        userInfo.setThirdType("WECOM");
-        
-        return userInfo;
+        // 暂时返回模拟数据
+        ThirdPartyUser user = new ThirdPartyUser();
+        user.setThirdId("wechat_user_id");
+        user.setThirdNickname("微信用户");
+        user.setThirdAvatar("https://example.com/avatar.jpg");
+        user.setAccessToken("access_token");
+        user.setRefreshToken("refresh_token");
+        user.setExpireTime(System.currentTimeMillis() + 7200000L); // 2小时后过期
+        user.setThirdType("WECHAT");
+        return user;
     }
     
     @Override
     public ThirdPartyUser getUserInfo(String accessToken) {
-        // 在实际项目中，这里需要调用企业微信API获取用户信息
-        // 这里只是一个示例实现
-        
-        ThirdPartyUser userInfo = new ThirdPartyUser();
-        userInfo.setThirdId("wecom_user_123");
-        userInfo.setThirdNickname("企业微信用户");
-        userInfo.setThirdAvatar("https://example.com/avatar.png");
-        userInfo.setThirdType("WECOM");
-        
-        return userInfo;
+        // 这里应该实现实际的获取用户信息逻辑
+        // 暂时返回模拟数据
+        ThirdPartyUser user = new ThirdPartyUser();
+        user.setThirdId("wechat_user_id");
+        user.setThirdNickname("微信用户");
+        user.setThirdAvatar("https://example.com/avatar.jpg");
+        user.setThirdType("WECHAT");
+        return user;
     }
 }

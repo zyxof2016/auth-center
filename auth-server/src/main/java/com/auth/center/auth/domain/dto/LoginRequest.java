@@ -84,6 +84,11 @@ public class LoginRequest {
     private Long tenantId;
     
     /**
+     * 接收者（用于发送验证码）
+     */
+    private String receiver;
+    
+    /**
      * 验证登录参数
      */
     public void validate() {

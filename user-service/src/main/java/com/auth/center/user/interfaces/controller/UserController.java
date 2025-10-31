@@ -81,19 +81,35 @@ public class UserController {
         return userApplicationService.resetPassword(id, newPassword);
     }
     
-    /**
-     * 根据用户名查询用户
-     */
-    @GetMapping("/username/{username}")
-    public SingleResponse<UserDTO> getUserByUsername(@RequestParam Long tenantId, @PathVariable String username) {
-        return userApplicationService.getUserByUsername(tenantId, username);
-    }
-    
-    /**
-     * 更新用户登录信息
-     */
-    @PutMapping("/{id}/login-info")
-    public Response updateLoginInfo(@PathVariable Long id, @RequestParam String loginIp) {
-        return userApplicationService.updateLoginInfo(id, loginIp);
+    /**
+     * 根据用户名查询用户
+     */
+    @GetMapping("/username/{username}")
+    public SingleResponse<UserDTO> getUserByUsername(@RequestParam Long tenantId, @PathVariable String username) {
+        return userApplicationService.getUserByUsername(tenantId, username);
+    }
+    
+    /**
+     * 根据邮箱查询用户
+     */
+    @GetMapping("/email/{email}")
+    public SingleResponse<UserDTO> getUserByEmail(@RequestParam Long tenantId, @PathVariable String email) {
+        return userApplicationService.getUserByEmail(tenantId, email);
+    }
+    
+    /**
+     * 根据手机号查询用户
+     */
+    @GetMapping("/phone/{phone}")
+    public SingleResponse<UserDTO> getUserByPhone(@RequestParam Long tenantId, @PathVariable String phone) {
+        return userApplicationService.getUserByPhone(tenantId, phone);
+    }
+    
+    /**
+     * 更新用户登录信息
+     */
+    @PutMapping("/{id}/login-info")
+    public Response updateLoginInfo(@PathVariable Long id, @RequestParam String loginIp) {
+        return userApplicationService.updateLoginInfo(id, loginIp);
     }
 }

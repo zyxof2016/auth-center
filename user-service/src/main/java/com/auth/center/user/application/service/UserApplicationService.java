@@ -84,6 +84,28 @@ public class UserApplicationService {
     }
     
     /**
+     * 根据邮箱查询用户
+     */
+    public SingleResponse<UserDTO> getUserByEmail(Long tenantId, String email) {
+        User user = userRepository.findByEmail(tenantId, email);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
+        return SingleResponse.of(convertToDTO(user));
+    }
+    
+    /**
+     * 根据手机号查询用户
+     */
+    public SingleResponse<UserDTO> getUserByPhone(Long tenantId, String phone) {
+        User user = userRepository.findByPhone(tenantId, phone);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
+        return SingleResponse.of(convertToDTO(user));
+    }
+    
+    /**
      * 分页查询用户列表
      */
     public PageResponse<UserDTO> getUserPage(Long tenantId, String username, String realName, 
@@ -135,6 +157,21 @@ public class UserApplicationService {
     }
     
     /**
+     * 锁定用户
+     */
+    public Response lockUser(Long id) {
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
+        
+        user.lock(); // 锁定用户
+        userDomainService.updateUserInfo(user);
+        
+        return Response.buildSuccess();
+    }
+    
+    /**
      * 重置用户密码
      */
     public Response resetPassword(Long id, String newPassword) {
@@ -155,7 +192,7 @@ public class UserApplicationService {
         
         return Response.buildSuccess();
     }
-    
+
     /**
      * 根据用户名查询用户
      */
@@ -192,6 +229,21 @@ public class UserApplicationService {
         }
         
         user.incrementLoginFailCount();
+        userDomainService.updateUserInfo(user);
+        
+        return Response.buildSuccess();
+    }
+    
+    /**
+     * 重置登录失败次数
+     */
+    public Response resetLoginFailCount(Long id) {
+        User user = userDomainService.getUserById(id);
+        if (user == null) {
+            throw new BusinessException(CommonErrorCode.USER_NOT_EXIST);
+        }
+        
+        user.resetLoginFailCount();
         userDomainService.updateUserInfo(user);
         
         return Response.buildSuccess();

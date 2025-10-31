@@ -42,7 +42,7 @@ public class ThirdPartyAuthServiceImpl implements ThirdPartyAuthService {
         }
         
         // 处理回调，获取用户信息
-        ThirdPartyUserInfo userInfo = provider.handleCallback(authCode, state);
+        ThirdPartyUser userInfo = provider.handleCallback(authCode, state);
         
         // 创建登录结果
         LoginResult loginResult = new LoginResult();
@@ -53,9 +53,9 @@ public class ThirdPartyAuthServiceImpl implements ThirdPartyAuthService {
         // 设置用户信息
         LoginResult.UserInfo resultUserInfo = new LoginResult.UserInfo();
         resultUserInfo.setId(1L);
-        resultUserInfo.setUsername(userInfo.getUsername());
-        resultUserInfo.setNickname(userInfo.getNickname());
-        resultUserInfo.setAvatar(userInfo.getAvatar());
+        resultUserInfo.setUsername("third_party_user");
+        resultUserInfo.setNickname(userInfo.getThirdNickname());
+        resultUserInfo.setAvatar(userInfo.getThirdAvatar());
         resultUserInfo.setRoles(new String[]{"USER"});
         resultUserInfo.setPermissions(new String[]{"READ"});
         

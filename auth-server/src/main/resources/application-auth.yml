@@ -41,6 +41,9 @@ auth:
         app-id: "wx1234567890abcdef"
         app-secret: "your-wechat-app-secret"
         scope: "snsapi_login"
+        authorize-url: "https://open.weixin.qq.com/connect/qrconnect"
+        access-token-url: "https://api.weixin.qq.com/sns/oauth2/access_token"
+        user-info-url: "https://api.weixin.qq.com/sns/userinfo"
         icon-url: "/icons/wechat.png"
         weight: 10
         
@@ -51,6 +54,9 @@ auth:
         app-id: "123456789"
         app-secret: "your-qq-app-secret"
         scope: "get_user_info"
+        authorize-url: "https://graph.qq.com/oauth2.0/authorize"
+        access-token-url: "https://graph.qq.com/oauth2.0/token"
+        user-info-url: "https://graph.qq.com/user/get_user_info"
         icon-url: "/icons/qq.png"
         weight: 20
         
@@ -81,6 +87,7 @@ auth:
         app-id: "your-wecom-corp-id"
         app-secret: "your-wecom-secret"
         scope: "snsapi_privateinfo"
+        authorize-url: "https://open.work.weixin.qq.com/wwopen/sso/3rd_qrConnect"
         handler-class: "com.auth.center.auth.custom.WeComThirdPartyProvider"
         icon-url: "/icons/wecom.png"
         weight: 50

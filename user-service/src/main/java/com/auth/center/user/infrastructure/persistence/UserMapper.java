@@ -28,6 +28,16 @@ public interface UserMapper {
     UserPO selectByUsername(@Param("tenantId") Long tenantId, @Param("username") String username);
     
     /**
+     * 根据邮箱查询用户
+     */
+    UserPO selectByEmail(@Param("tenantId") Long tenantId, @Param("email") String email);
+    
+    /**
+     * 根据手机号查询用户
+     */
+    UserPO selectByPhone(@Param("tenantId") Long tenantId, @Param("phone") String phone);
+    
+    /**
      * 根据用户名统计数量
      */
     long countByUsername(@Param("tenantId") Long tenantId, @Param("username") String username);
