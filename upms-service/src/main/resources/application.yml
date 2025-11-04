@@ -1,0 +1,27 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: role-service
+  
+  cloud:
+    nacos:
+      username:
+      password:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        group: ${spring.cloud.nacos.discovery.group}
+  config:
+    import:
+      - optional:nacos:common-datasource.yml
+      - optional:nacos:common-redis.yml
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.auth.center.user.infrastructure.persistence.po

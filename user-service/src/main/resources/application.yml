@@ -1,33 +1,35 @@
+server:
+  port: 8002
+
 spring:
   application:
     name: user-service
   
   cloud:
     nacos:
-      username: nacos
-      password: nacos
+      username:
+      password:
       discovery:
         server-addr: localhost:8848
-      config:
-        server-addr: localhost:8848
-        file-extension: yaml
         namespace: public
         group: DEFAULT_GROUP
-        shared-configs[0]:
-          data-id: common-datasource.yml
-          group: DEFAULT_GROUP
-          refresh: true
-        shared-configs[1]:
-          data-id: common-redis.yml
-          group: DEFAULT_GROUP
-          refresh: true
-          
-  datasource:
-    url: jdbc:mysql://localhost:3306/auth_center?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.auth.center.user.infrastructure.persistence.po
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        group: ${spring.cloud.nacos.discovery.group}
+  config:
+    import:
+      - optional:nacos:common-datasource.yml
+      - optional:nacos:common-redis.yml
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0

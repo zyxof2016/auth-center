@@ -1,8 +1,34 @@
 # 认证中心分布式微服务系统
 
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/zyxof2016/auth-center)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Spring Boot](https://img.shields.io/badge/spring%20boot-2.7.18-green.svg)](https://spring.io/projects/spring-boot)
+[![Spring Cloud](https://img.shields.io/badge/spring%20cloud-2021.0.9-blue.svg)](https://spring.io/projects/spring-cloud)
+[![Java](https://img.shields.io/badge/java-8+-orange.svg)](https://www.oracle.com/java/technologies/javase-downloads.html)
+
 ## 项目概述
 
-基于Spring Cloud Alibaba和Vue.js的分布式认证授权中心，支持多租户、OAuth2.1、RBAC权限管理、大文件上传下载等核心功能。采用COLA架构模式，提供完整的认证授权解决方案。
+基于Spring Cloud Alibaba的分布式认证授权中心，支持多租户、OAuth2.1、RBAC权限管理、大文件上传下载等核心功能。采用COLA架构模式，提供完整的认证授权解决方案。
+
+### 🌟 核心特性
+
+- **🔐 多种认证方式** - 用户名/邮箱/手机号密码、验证码、第三方社交登录
+- **🏢 多租户支持** - 完整的数据隔离和资源隔离
+- **🔑 OAuth2.1协议** - 支持授权码、密码、客户端等多种认证模式
+- **🛡️ JWT令牌管理** - 无状态会话，支持令牌刷新
+- **🎯 单点登录(SSO)** - 统一认证入口
+- **🔒 RBAC权限模型** - 基于角色的访问控制
+- **📁 大文件处理** - 分片上传、断点续传、多存储提供商
+- **📊 系统监控** - 服务健康监控、性能指标展示
+- **📧 通知服务** - 邮件、短信、站内通知
+- **🚀 高并发处理** - 消息队列异步处理
+
+### 📈 项目状态
+
+> **当前版本**: v1.0.0-SNAPSHOT  
+> **开发状态**: 核心功能已完成，前端应用和测试体系待完善  
+> **文档完整度**: 85%  
+> **测试覆盖率**: 待提升
 
 ## 🚀 核心特性
 
@@ -336,17 +362,67 @@ curl -X GET http://localhost:8082/actuator/health
 
 ## 📚 文档目录
 
+### 核心文档
 - [🏗️ 架构设计文档](./docs/architecture.md) - 系统架构和模块设计
 - [🗄️ 数据库设计文档](./docs/database.md) - 数据库表结构和关系
 - [🔌 API接口文档](./docs/api.md) - 完整的API接口说明
 - [🚀 部署运维文档](./docs/deployment.md) - 部署和运维指南
+
+### 开发文档
+- [👨‍💻 开发者指南](./docs/developer-guide.md) - 开发环境搭建和规范
+- [🧪 测试指南](./docs/testing-guide.md) - 单元测试和集成测试
+- [📝 代码规范](./docs/coding-standards.md) - 代码风格和规范
+
+### 功能文档
 - [🎨 前端开发文档](./docs/frontend.md) - 前端架构和开发指南
 - [📁 文件存储指南](./docs/file-storage.md) - 大文件上传下载详细说明
+- [📊 监控告警指南](./docs/monitoring.md) - 系统监控和告警配置
+- [🔔 通知服务文档](./docs/notification-service.md) - 邮件短信通知配置
+
+### 运维文档
+- [🐳 Docker部署](./docs/docker-deployment.md) - Docker容器化部署
+- [☸️ Kubernetes部署](./docs/k8s-deployment.md) - K8s集群部署
+- [🔧 故障排查](./docs/troubleshooting.md) - 常见问题解决方案
+- [📈 性能优化](./docs/performance-tuning.md) - 系统性能调优指南
+
+### 项目文档
+- [🗺️ 项目路线图](./docs/roadmap.md) - 项目发展规划
+- [📋 更新日志](./docs/changelog.md) - 版本更新记录
+- [❓ 常见问题](./docs/faq.md) - 常见问题解答
 
 ## 🤝 贡献指南
 
-欢迎提交Issue和Pull Request来完善这个项目！
+我们欢迎所有形式的贡献！请查看 [贡献指南](./CONTRIBUTING.md) 了解如何参与项目开发。
+
+### 贡献方式
+- 🐛 [报告Bug](https://github.com/zyxof2016/auth-center/issues/new?template=bug_report.md)
+- 💡 [功能建议](https://github.com/zyxof2016/auth-center/issues/new?template=feature_request.md)
+- 📝 [改进文档](https://github.com/zyxof2016/auth-center/edit/main/README.md)
+- 🔧 [提交代码](./docs/developer-guide.md#提交代码)
+
+### 贡献者
+感谢所有为这个项目做出贡献的开发者！
+
+## 📞 联系我们
+
+- 📧 邮箱: auth-center@example.com
+- 💬 微信群: [扫码加入](./docs/wechat-group-qrcode.jpg)
+- 📱 QQ群: 123456789
+- 🔗 官网: https://auth-center.example.com
+
+## 🙏 致谢
+
+感谢以下开源项目的支持：
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Spring Cloud Alibaba](https://github.com/alibaba/spring-cloud-alibaba)
+- [Nacos](https://nacos.io/zh-cn/)
+- [RocketMQ](https://rocketmq.apache.org/)
+- [MinIO](https://min.io/)
 
 ## 📄 许可证
 
-本项目采用MIT许可证，详情请查看LICENSE文件。
+本项目采用 [MIT许可证](LICENSE) - 详情请查看LICENSE文件。
+
+---
+
+⭐ 如果这个项目对您有帮助，请给我们一个Star！

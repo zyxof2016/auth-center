@@ -1,37 +1,39 @@
+# auth-server 服务配置
+server:
+  port: 8001
+
 spring:
   application:
     name: auth-server
   
   cloud:
     nacos:
-      username: nacos
-      password: nacos
+      username:
+      password:
       discovery:
         server-addr: localhost:8848
         namespace: public
         group: DEFAULT_GROUP
       config:
-        server-addr: localhost:8848
-        file-extension: yaml
-        namespace: public
-        group: DEFAULT_GROUP
-        shared-configs[0]:
-          data-id: common-datasource.yml
-          group: DEFAULT_GROUP
-          refresh: true
-        shared-configs[1]:
-          data-id: common-redis.yml
-          group: DEFAULT_GROUP
-          refresh: true
-        extension-configs[0]:
-          data-id: auth-server.yml
-          group: DEFAULT_GROUP
-          refresh: true
-  
-  # 配置文件包含
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        group: ${spring.cloud.nacos.discovery.group}
   config:
     import:
-      - classpath:application-auth.yml
+      - optional:nacos:common-datasource.yml
+      - optional:nacos:common-redis.yml
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
 
 # 日志配置
 logging:

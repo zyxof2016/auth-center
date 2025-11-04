@@ -46,7 +46,7 @@
         <module>auth-gateway</module>
         <module>auth-server</module>
         <module>user-service</module>
-        <module>role-service</module>
+        <module>permission-service</module>
         <module>client-service</module>
         <module>log-service</module>
         <module>monitor-service</module>
