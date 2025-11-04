@@ -1,0 +1,73 @@
+// Flex 居中
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Flex 垂直居中
+@mixin flex-vertical-center {
+  display: flex;
+  align-items: center;
+}
+
+// Flex 水平居中
+@mixin flex-horizontal-center {
+  display: flex;
+  justify-content: center;
+}
+
+// 文字省略
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 多行文字省略
+@mixin multi-line-ellipsis($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 卡片样式
+@mixin card {
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: var(--el-border-radius-base);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+// 清除浮动
+@mixin clearfix {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+// 按钮样式
+@mixin button-variant($bg-color, $border-color, $text-color) {
+  background-color: $bg-color;
+  border-color: $border-color;
+  color: $text-color;
+
+  &:hover {
+    background-color: mix(white, $bg-color, 20%);
+    border-color: mix(white, $border-color, 20%);
+  }
+
+  &:active {
+    background-color: mix(black, $bg-color, 10%);
+    border-color: mix(black, $border-color, 10%);
+  }
+}
+
+// 过渡效果
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
